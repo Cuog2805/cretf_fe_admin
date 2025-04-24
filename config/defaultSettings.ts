@@ -7,13 +7,15 @@ const Settings: ProLayoutProps & {
   pwa?: boolean;
   logo?: string;
 } = {
+  hasSiderMenu: false,
+  //menuRender: false,
   navTheme: 'light',
-  colorPrimary: '#1D50E7',
-  layout: 'mix',
+  colorPrimary: '#ff4d4f',
+  layout: 'top',
   contentWidth: 'Fluid',
-  fixedHeader: false,
+  fixedHeader: true,
   fixSiderbar: true,
-  colorWeak: false,
+  colorWeak: true,
   title: 'CRANE',
   pwa: true,
   logo: undefined,
@@ -22,6 +24,10 @@ const Settings: ProLayoutProps & {
   draggable: true,
   token: {},
   locale: undefined,
+  headerTitleRender: false,
+  footerRender: false,
+  // collapsed: undefined,
+  // collapsedButtonRender: undefined,
 };
 
 export default Settings;

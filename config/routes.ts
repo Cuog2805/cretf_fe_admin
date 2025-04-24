@@ -24,7 +24,7 @@ export default [
   },
   {
     path: '/',
-    layout: false,
+    layout: true,
     //component: './layouts',
     routes: [
       {
@@ -36,27 +36,38 @@ export default [
         path: '/welcome',
         component: './Welcome',
       },
-    ],
-  },
-  {
-    path: '/landing-page',
-    layout: true,
-    //component: './layouts',
-    routes: [
       {
         name: 'landing-page',
-        icon: 'home',
         path: '/landing-page',
+        component: './LandingPage',
+      },
+      {
+        path: '/buy',
+        redirect: '/buy/houses-for-sale',
+      },
+      {
+        name: 'Mua',
+        path: '/buy/houses-for-sale',
+        component: './BuyPage',
+      },
+      {
+        name: 'Xem chi tiết',
+        path: '/buy/houses-for-sale/detail/:propertyId',
+        component: './BuyPage/Detail',
+      },
+      {
+        name: 'Thêm mới',
+        path: '/buy/houses-for-sale/create',
+        component: './BuyPage/Create',
+      },
+      {
+        name: 'rent',
+        path: '/rent',
         component: './LandingPage',
       },
     ],
   },
-  // {
-  //   path: '/welcome',
-  //   name: 'welcome',
-  //   icon: 'smile',
-  //   component: './Welcome',
-  // },
+
   // {
   //   path: '/admin',
   //   name: 'admin',
