@@ -12,14 +12,19 @@
  */
 export default [
   {
-    path: '/user',
+    path: '/auth',
     layout: false,
     routes: [
-      {
-        name: 'login',
-        path: '/user/login',
-        component: './User/Login',
-      },
+        {
+          name: 'login',
+          path: '/auth/login',
+          component: './User/Login',
+        },
+        {
+          name: 'register',
+          path: '/auth/register',
+          component: './User/Register',
+        },
     ],
   },
   {
@@ -46,8 +51,28 @@ export default [
         redirect: '/buy/houses-for-sale',
       },
       {
-        name: 'Mua',
+        name: 'Mua nhà',
         path: '/buy/houses-for-sale',
+        component: './BuyPage',
+      },
+      {
+        name: 'Mua căn hộ',
+        path: '/buy/condos-for-sale',
+        component: './BuyPage',
+      },
+      {
+        name: 'Mua đất nền',
+        path: '/buy/land-for-sale',
+        component: './BuyPage',
+      },
+      {
+        name: 'Thuê nhà',
+        path: '/rent/houses-for-rent',
+        component: './BuyPage',
+      },
+      {
+        name: 'Thuê căn hộ',
+        path: '/rent/condos-for-rent',
         component: './BuyPage',
       },
       {
@@ -64,6 +89,51 @@ export default [
         name: 'rent',
         path: '/rent',
         component: './LandingPage',
+      },
+      {
+        name: 'Cuộc hẹn',
+        path: '/appointment',
+        component: './Appointment',
+      },
+      {
+        name: 'Đặt cọc',
+        path: '/deposit/:propertyId',
+        component: './Deposit',
+      },
+      {
+        name: 'Hồ sơ',
+        path: '/account/profile/detail',
+        component: './User/Profile/Detail',
+      },
+      {
+        name: 'Chỉnh sửa hồ sơ',
+        path: '/account/profile/edit',
+        component: './User/Profile/Edit',
+      },
+      {
+        name: 'Đổi mật khẩu',
+        path: '/account/profile/password',
+        component: './User/Profile/Password',
+      },
+      {
+        name: 'Bất động sản của tôi',
+        path: '/account/my-property',
+        component: './MyProperty',
+      },
+      {
+        name: 'Thêm mới bất động sản',
+        path: '/account/my-property/create',
+        component: './MyProperty/Create',
+      },
+      {
+        name: 'Chỉnh sửa bất động sản',
+        path: '/account/my-property/edit/:propertyId',
+        component: './MyProperty/Create',
+      },
+      {
+        name: 'Cọc',
+        path: '/account/profile/deposit',
+        component: './User/Profile/Deposit',
       },
     ],
   },

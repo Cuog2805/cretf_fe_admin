@@ -101,18 +101,37 @@ export const errorConfig: RequestConfig = {
         }
         return {...config, url};
     },
+    (url: string, options: RequestOptions) => {
+      const token = localStorage.getItem('token');
+      const authHeader = { Authorization: token ? `Bearer ${token}` : '' };
+      
+      return {
+        url,
+        options: {
+          ...options,
+          headers: {
+            ...options.headers,
+            ...authHeader,
+          },
+        },
+      };
+    },
   ],
 
   // 响应拦截器
   responseInterceptors: [
     (response) => {
       // 拦截响应数据，进行个性化处理
-      const { data } = response as unknown as ResponseStructure;
-
-      if (data?.success === false) {
-        message.error('请求失败！');
+      //const { data } = response as unknown as ResponseStructure;
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        window.location.href = '/auth/login';
       }
       return response;
+      // if (data?.success === false) {
+      //   message.error('请求失败！');
+      // }
+      // return response;
     },
   ],
 };

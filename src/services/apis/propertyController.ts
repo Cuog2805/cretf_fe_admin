@@ -19,12 +19,26 @@ export async function createMultiProperty(
 
 /** 此处后端没有提供注释 POST /property/createProperty */
 export async function createProperty(body: API.PropertyDTO, options?: { [key: string]: any }) {
-  return request<API.PropertyDTO>('/property/createProperty', {
+  return request<API.ResponsePropertyDTO>('/property/createProperty', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     data: body,
+    ...(options || {}),
+  });
+}
+
+/** 此处后端没有提供注释 DELETE /property/deleteProperty/${param0} */
+export async function deleteProperty(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.deletePropertyParams,
+  options?: { [key: string]: any },
+) {
+  const { id: param0, ...queryParams } = params;
+  return request<API.ResponseString>(`/property/deleteProperty/${param0}`, {
+    method: 'DELETE',
+    params: { ...queryParams },
     ...(options || {}),
   });
 }
@@ -36,7 +50,7 @@ export async function getAllProperties(
   body: API.PropertyDTO,
   options?: { [key: string]: any },
 ) {
-  return request<API.PagePropertyDTO>('/property/getAllProperties', {
+  return request<API.ResponseListPropertyDTO>('/property/getAllProperties', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -56,7 +70,19 @@ export async function getOneDetailProperty(
   body: API.PropertyDTO,
   options?: { [key: string]: any },
 ) {
-  return request<API.PropertyDTO>('/property/getOneDetailProperty', {
+  return request<API.ResponsePropertyDTO>('/property/getOneDetailProperty', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** 此处后端没有提供注释 POST /property/updateProperty */
+export async function updateProperty(body: API.PropertyDTO, options?: { [key: string]: any }) {
+  return request<API.ResponsePropertyDTO>('/property/updateProperty', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

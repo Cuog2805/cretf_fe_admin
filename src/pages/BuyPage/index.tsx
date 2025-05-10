@@ -12,15 +12,31 @@ import {
   Carousel,
   Tag,
   List,
+  Form,
+  TreeSelect,
 } from 'antd';
 import { PageContainer, ProCard } from '@ant-design/pro-components';
-import { HeartFilled, HeartOutlined, LeftOutlined, LikeOutlined, RightOutlined } from '@ant-design/icons';
+import {
+  ArrowDownOutlined,
+  ArrowUpOutlined,
+  HeartFilled,
+  HeartOutlined,
+  LeftOutlined,
+  LikeOutlined,
+  RightOutlined,
+} from '@ant-design/icons';
 import { getAllProperties, getOneDetailProperty } from '@/services/apis/propertyController';
 import { UNPAGED } from '@/core/constant';
 import useStatus from '@/selectors/useStatus';
 import FileRenderer from '@/utils/file/fileRender';
-import { useNavigate } from '@umijs/max';
+import { useLocation, useNavigate } from '@umijs/max';
 import useCategoryShareds from '@/selectors/useCategoryShareds';
+import FormItem from 'antd/es/form/FormItem';
+import { useCurrentUser } from '@/selectors/useCurrentUser';
+import usePropertyType from '@/selectors/usePropertyType';
+import usePagination from '@/utils/usePagination';
+import { findIdAndNodeChildrenIds, findNodeById } from '@/utils/treeUtil';
+import useLocations from '@/selectors/useLocation';
 const { Title, Paragraph, Text } = Typography;
 const { Option } = Select;
 
@@ -38,17 +54,97 @@ const priceOptions = [
 ];
 
 const BuyPage = () => {
+  const [form] = Form.useForm();
   const navigate = useNavigate();
-  const { propertyStatusList } = useStatus();
-  const { dmAmenityType} = useCategoryShareds()
+  const location = useLocation();
+  const currentUser = useCurrentUser();
+  const { propertySoldStatusList, propertyStatusList } = useStatus();
+  const { propertyTypeList } = usePropertyType();
+  const { locationList, locationTree } = useLocations();
 
-  const [propertyList, setPropertyList] = useState<API.PropertyDTO[]>([]);
+  const [properties, setProperties] = useState<API.PropertyDTO[]>([]);
+  const [total, setTotal] = useState(0);
+  const [searchText, setSearchText] = useState('');
+  const [propertyType, setPropertyType] = useState<string>('');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+
+  const { tableProps, paginationQuery } = usePagination({
+    sort: 'createdAt,desc',
+  });
+  const { pagination } = tableProps(total);
 
   useEffect(() => {
-    getAllProperties(UNPAGED, {}).then((res) => {
-      setPropertyList(res.content ?? []);
+    handleSearch();
+  }, [paginationQuery]);
+
+  const getPropertyTypeFromMenu = (): API.PropertyDTO => {
+    const path = location.pathname;
+    if (path.includes('/buy/houses-for-sale'))
+      return {
+        type: 'SOLD',
+        propertyTypeId: propertyTypeList.find((d) => d.code === 'HOUSE')?.propertyTypeId,
+      };
+    if (path.includes('/buy/condos-for-sale'))
+      return {
+        type: 'SOLD',
+        propertyTypeId: propertyTypeList.find((d) => d.code === 'CONDO')?.propertyTypeId,
+      };
+    if (path.includes('/buy/land-for-sale'))
+      return {
+        type: 'SOLD',
+        propertyTypeId: propertyTypeList.find((d) => d.code === 'LAND')?.propertyTypeId,
+      };
+    if (path.includes('/rent/houses-for-rent'))
+      return {
+        type: 'RENT',
+        propertyTypeId: propertyTypeList.find((d) => d.code === 'HOUSE')?.propertyTypeId,
+      };
+    if (path.includes('/rent/condos-for-rent'))
+      return {
+        type: 'RENT',
+        propertyTypeId: propertyTypeList.find((d) => d.code === 'CONDO')?.propertyTypeId,
+      };
+
+    return {};
+  };
+
+  const handleSearch = () => {
+    form.validateFields().then((formValue) => {
+      console.log('formValue', formValue);
+      const body: API.PropertyDTO = {
+        ...formValue,
+        type: getPropertyTypeFromMenu().type,
+        propertyTypeId: getPropertyTypeFromMenu().propertyTypeId,
+        priceNewestScale: location.pathname.includes('/buy') ? 'SCALE_BILLION_VND' : 'SCALE_MILLION_VND',
+        creator: currentUser?.username,
+      };
+      const page: any = {
+        page: paginationQuery.page,
+        size: paginationQuery.size,
+        sort: formValue.sortBy + ',' + formValue.sortDirection,
+      };
+      console.log('page', page);
+      getAllProperties(page, body).then((res) => {
+        setProperties(res?.data);
+        setTotal(res?.total);
+      });
     });
-  }, []);
+  };
+
+  const toggleSortDirection = () => {
+    const newDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+    setSortDirection(newDirection);
+    form.setFieldsValue({ sortDirection: newDirection }); // cập nhật vào form
+  };
+
+  // Reset bộ lọc
+  const resetFilters = () => {
+    form.setFieldsValue({
+      locationId: null,
+      propertyTypeId: null,
+      statusIds: null,
+    });
+  };
 
   return (
     <PageContainer
@@ -83,44 +179,108 @@ const BuyPage = () => {
             </Col>
           </Row>
         </Card>
-        <Card>
-          <Row gutter={12}>
-            <Col xs={24} sm={12} md={8}>
-              <Input
-                size="large"
-                placeholder="Thành phố, Địa chỉ, Trường học, ZIP"
-                style={{ marginBottom: 16, width: '100%' }}
-              />
-            </Col>
-            <Col xs={24} sm={24} md={12}>
-              <Row gutter={12}>
-                <Col span={12}>
-                  <Select defaultValue="No min" size="large" style={{ width: '100%' }}>
-                    {priceOptions.map((value) => (
-                      <Option key={value} value={value}>
-                        {value}
+
+        {/* Bộ lọc và tìm kiếm */}
+        <Form form={form} initialValues={{ sortBy: 'dateCreated', sortDirection: 'desc' }}>
+          <Card style={{ marginBottom: 20 }}>
+            <Row gutter={16}>
+              <Col span={8}>
+                <FormItem name="locationIds">
+                  <TreeSelect
+                    showSearch
+                    dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                    treeData={locationTree}
+                    fieldNames={{ label: 'name', value: 'locationId', children: 'children' }}
+                    placeholder="Chọn khu vực"
+                    allowClear
+                    treeDefaultExpandAll
+                    onChange={(value) => {
+                      const node = findNodeById(locationTree, value);
+                      form.setFieldValue('locationIds', findIdAndNodeChildrenIds(node));
+                    }}
+                  />
+                </FormItem>
+              </Col>
+              <Col span={4}>
+                <FormItem name="priceFrom">
+                  <Select
+                    style={{ width: '100%' }}
+                    placeholder="Giá từ"
+                    value={propertyType || undefined}
+                    onChange={setPropertyType}
+                    allowClear
+                  >
+                    {[0.5, 1, 2, 3, 4, 5, 10, 15, 20, 30, 50, 100].map((price) => (
+                      <Option key={price} value={price}>
+                        {price} {location.pathname.includes('/buy') ? 'Tỷ đồng' : 'Triệu đồng'}
                       </Option>
                     ))}
                   </Select>
-                </Col>
-                <Col span={12}>
-                  <Select defaultValue="No max" size="large" style={{ width: '100%' }}>
-                    {priceOptions.map((value) => (
-                      <Option key={value} value={value}>
-                        {value}
+                </FormItem>
+              </Col>
+              <Col span={4}>
+                <FormItem name="priceTo">
+                  <Select
+                    style={{ width: '100%' }}
+                    placeholder="Giá đến"
+                    value={propertyType || undefined}
+                    onChange={setPropertyType}
+                    allowClear
+                  >
+                    {[0.5, 1, 2, 3, 4, 5, 10, 15, 20, 30, 50, 100].map((price) => (
+                      <Option
+                        key={price}
+                        value={price}
+                        disabled={
+                          form.getFieldValue('priceFrom')
+                            ? form.getFieldValue('priceFrom') >= price
+                            : false
+                        }
+                      >
+                        {price} {location.pathname.includes('/buy') ? 'Tỷ đồng' : 'Triệu đồng'}
                       </Option>
                     ))}
                   </Select>
-                </Col>
-              </Row>
-            </Col>
-            <Col xs={24} sm={24} md={4}>
-              <Button type="primary" size="large" block>
-                Tìm kiếm
-              </Button>
-            </Col>
-          </Row>
-        </Card>
+                </FormItem>
+              </Col>
+              <Col span={3}>
+                <FormItem name="sortBy">
+                  <Select placeholder="Sắp xếp theo">
+                    <Option key="dateCreated" value="dateCreated">
+                      Mới nhất
+                    </Option>
+                    <Option key="priceNewestValue" value="priceNewestValue">
+                      Giá
+                    </Option>
+                  </Select>
+                </FormItem>
+              </Col>
+              <Col span={1}>
+                <Form form={form}>
+                  <Form.Item name="sortDirection">
+                    <Button
+                      icon={sortDirection === 'asc' ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
+                      onClick={toggleSortDirection}
+                    />
+                  </Form.Item>
+                </Form>
+              </Col>
+              <Col span={4}>
+                <Space
+                  direction="horizontal"
+                  style={{ display: 'flex', justifyContent: 'space-evenly' }}
+                >
+                  <Button type="primary" ghost onClick={resetFilters}>
+                    Đặt lại
+                  </Button>
+                  <Button type="primary" onClick={handleSearch}>
+                    Tìm kiếm
+                  </Button>
+                </Space>
+              </Col>
+            </Row>
+          </Card>
+        </Form>
 
         <List
           grid={{
@@ -132,7 +292,8 @@ const BuyPage = () => {
             xl: 3,
             xxl: 3,
           }}
-          dataSource={propertyList}
+          dataSource={properties}
+          {...tableProps(total)}
           renderItem={(item) => (
             <List.Item>
               <Card
@@ -143,26 +304,28 @@ const BuyPage = () => {
                 }}
                 cover={
                   <div style={{ position: 'relative' }}>
-                    <Carousel 
-                      arrows 
-                      dots={true}
-                      infinite={true}
-                      autoplay={true}
-                    >
+                    <Carousel arrows dots={true} infinite={true} autoplay={true}>
                       {item.propertyFilesDTOs
                         ?.filter((file) => file.category === 'COMMON')
-                        .flatMap(fileGroup => fileGroup.fileIds || [])
+                        .flatMap((fileGroup) => fileGroup.fileIds || [])
                         .map((fileId) => (
-                          <div key={fileId} style={{ height: 240, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                            <FileRenderer 
-                              fileId={fileId} 
-                              height={240} 
+                          <div
+                            key={fileId}
+                            style={{
+                              height: 240,
+                              display: 'flex',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                            }}
+                          >
+                            <FileRenderer
+                              fileId={fileId}
+                              height={240}
                               width="100%"
                               style={{ objectFit: 'cover' }}
                             />
                           </div>
-                        ))
-                      }
+                        ))}
                     </Carousel>
 
                     {/* Tags section */}
@@ -208,7 +371,10 @@ const BuyPage = () => {
                       {item.amenityDTOs?.find((item) => item.code === 'AREA')?.valueDisplay}
                     </Text>
                     <br />
-                    <Text type="secondary">{item.addressSpecific}</Text>
+                    <Text type="secondary">
+                      {item.addressSpecific},{' '}
+                      {locationList.find((l) => l.locationId === item.locationId)?.fullname}
+                    </Text>
                     <br />
                     <br />
                     <Space size="small" wrap>
@@ -217,26 +383,26 @@ const BuyPage = () => {
                         .map((am) => <Text type="secondary">{am.name}</Text>)}
                     </Space>
                   </div>
-                  
+
                   {/* Action section */}
-                  <div style={{ 
-                    position: 'absolute',
-                    bottom: 0,
-                    right: 0,
-                    background: '#fff',
-                    padding: '8px 0 0 8px'
-                  }}>
+                  <div
+                    style={{
+                      position: 'absolute',
+                      bottom: 0,
+                      right: 0,
+                      background: '#fff',
+                      padding: '8px 0 0 8px',
+                    }}
+                  >
                     <Space>
-                      <Button 
-                        type="text" 
+                      <Button
+                        type="text"
                         size="large"
                         icon={<HeartFilled style={{ color: '#ff4d4f' }} />}
                         onClick={(e) => {
                           e.stopPropagation();
-                          
                         }}
-                      >
-                      </Button>
+                      ></Button>
                     </Space>
                   </div>
                 </div>

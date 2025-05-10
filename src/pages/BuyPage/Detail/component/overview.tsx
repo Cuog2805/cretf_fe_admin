@@ -4,11 +4,13 @@ import { Space, Tag } from "antd";
 import useStatus from "@/selectors/useStatus";
 import { Card } from "antd";
 import { Typography } from "antd";
+import useLocation from "@/selectors/useLocation";
 
 const { Text, Title } = Typography;
 
 const Overview = ({ propertyDetail }: { propertyDetail: API.PropertyDTO | null }) => {
   const { propertyStatusList } = useStatus();
+  const { locationList } = useLocation();
   return (
     <div
       id="overview"
@@ -35,7 +37,11 @@ const Overview = ({ propertyDetail }: { propertyDetail: API.PropertyDTO | null }
               );
             })}
             <Title level={3} style={{ marginTop: 16 }}>
+              {propertyDetail?.name?.toLocaleUpperCase()}
+              {', '}
               {propertyDetail?.addressSpecific?.toLocaleUpperCase()}
+              {', '}
+              {locationList.find((l) => l.locationId === propertyDetail?.locationId)?.fullname?.toLocaleUpperCase()}
             </Title>
           </div>
 
@@ -53,7 +59,7 @@ const Overview = ({ propertyDetail }: { propertyDetail: API.PropertyDTO | null }
                 {propertyDetail?.amenityDTOs?.find((item) => item.code === 'BED')?.value}
               </Title>
               <Text type="secondary">
-                {propertyDetail?.amenityDTOs?.find((item) => item.code === 'BED')?.scaleUnit}
+                {propertyDetail?.amenityDTOs?.find((item) => item.code === 'BED')?.name}
               </Text>
             </div>
             <div>
@@ -61,7 +67,7 @@ const Overview = ({ propertyDetail }: { propertyDetail: API.PropertyDTO | null }
                 {propertyDetail?.amenityDTOs?.find((item) => item.code === 'BATH')?.value}
               </Title>
               <Text type="secondary">
-                {propertyDetail?.amenityDTOs?.find((item) => item.code === 'BATH')?.scaleUnit}
+                {propertyDetail?.amenityDTOs?.find((item) => item.code === 'BATH')?.name}
               </Text>
             </div>
             <div>

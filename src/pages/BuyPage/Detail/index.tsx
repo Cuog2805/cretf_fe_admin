@@ -12,93 +12,57 @@ import {
   Anchor,
   Modal,
   Tabs,
+  Form,
+  Select,
+  TimePicker,
+  DatePicker,
 } from 'antd';
 import { PageContainer } from '@ant-design/pro-components';
 import { HeartOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import FileRenderer from '@/utils/file/fileRender';
-import { useParams } from '@umijs/max';
+import { useNavigate, useParams } from '@umijs/max';
 import { getOneDetailProperty } from '@/services/apis/propertyController';
 import useStatus from '@/selectors/useStatus';
-import Neighborhood from './neighborhood';
-import Extend from './extend';
-import Detail from './detail';
-import Overview from './overview';
+import Neighborhood from './component/neighborhood';
+import Extend from './component/extend';
+import Detail from './component/detail';
+import Overview from './component/overview';
+import AppointmentModal from '../../Appointment/appointment-modal';
+import { useCurrentUser } from '@/selectors/useCurrentUser';
 const { Title, Text } = Typography;
 
 const PropertyDetail = () => {
   const { propertyId } = useParams();
+  const currentUser = useCurrentUser();
   const { propertyStatusList } = useStatus();
+  const navigate = useNavigate();
 
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isModalImagesVisible, setIsModalImagesVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('COMMON');
   const [propertyDetail, setPropertyDetail] = useState<API.PropertyDTO | null>(null);
-  const [activeFilter, setActiveFilter] = useState('all');
+  const [isModalAppointmentVisible, setIsModalAppointmentVisible] = useState(false);
+
+  const showModalAppointment = () => {
+    setIsModalAppointmentVisible(true);
+  };
+
+  const handleCancelAppointmentModal = () => {
+    setIsModalAppointmentVisible(false);
+  };
 
   useEffect(() => {
     getOneDetailProperty({ propertyId: propertyId }).then((res) => {
-      setPropertyDetail(res);
+      setPropertyDetail(res.data ?? {});
     });
   }, [propertyId]);
 
-  const imageCategories = {
-    all: {
-      title: 'All',
-      count: 27,
-      images: [
-        '/image/banner-homes-for-sale.png',
-        '/image/banner-homes-for-sale.png',
-        '/image/banner-homes-for-sale.png',
-        '/image/banner-homes-for-sale.png',
-        '/image/banner-homes-for-sale.png',
-        '/image/banner-homes-for-sale.png',
-      ],
-    },
-    kitchen: {
-      title: 'Kitchen',
-      count: 4,
-      images: ['/image/banner-homes-for-sale.png', '/image/banner-homes-for-sale.png'],
-    },
-    bathroom: {
-      title: 'Bathroom',
-      count: 3,
-      images: ['/image/banner-homes-for-sale.png', '/image/banner-homes-for-sale.png'],
-    },
-    bedroom: {
-      title: 'Bedroom',
-      count: 5,
-      images: ['/image/banner-homes-for-sale.png', '/image/banner-homes-for-sale.png'],
-    },
-    living: {
-      title: 'Living',
-      count: 4,
-      images: ['/image/banner-homes-for-sale.png', '/image/banner-homes-for-sale.png'],
-    },
-    dining: {
-      title: 'Dining',
-      count: 2,
-      images: ['/image/banner-homes-for-sale.png'],
-    },
-  };
-
   const handleImageClick = () => {
-    setIsModalVisible(true);
+    setIsModalImagesVisible(true);
   };
 
   const handleModalClose = () => {
-    setIsModalVisible(false);
+    setIsModalImagesVisible(false);
   };
-
-  const [imageUrl, setImageUrl] = useState('#');
-
-  useEffect(() => {
-    // Giả sử fileId được truyền vào component
-    const fileId = '3ab76eae-ba7a-4c57-99ce-d1abb45cf3ce';
-    fetch(`/api/files/${fileId}/url`)
-      .then((response) => response.json())
-      .then((data) => {
-        setImageUrl(data.url);
-      });
-  }, []);
 
   return (
     <>
@@ -126,7 +90,12 @@ const PropertyDetail = () => {
               height: '56px',
             }}
           >
-            <Button icon={<ArrowLeftOutlined />} type="text" style={{ marginRight: '24px' }}>
+            <Button
+              icon={<ArrowLeftOutlined />}
+              type="text"
+              style={{ marginRight: '24px' }}
+              onClick={() => history.back()}
+            >
               Trở lại
             </Button>
 
@@ -227,7 +196,7 @@ const PropertyDetail = () => {
 
           {/* Image Preview Modal */}
           <Modal
-            open={isModalVisible}
+            open={isModalImagesVisible}
             onCancel={handleModalClose}
             footer={null}
             width="90%"
@@ -272,40 +241,55 @@ const PropertyDetail = () => {
               <div id="property-details">
                 <Detail propertyDetail={propertyDetail} />
               </div>
-
-              <div id="sale-tax-history">
-                <Card title="Khác" style={{ height: '300px' }}>
-                  {/* Sale & tax history content */}
-                </Card>
-              </div>
             </Col>
             <Col sm={24} md={8} lg={8}>
               <div
                 style={{
                   position: 'sticky',
                   top: '60px',
+                  paddingTop: '50px',
+                  marginTop: '-65px',
                   zIndex: 99,
                 }}
               >
                 <Card style={{ marginTop: '24px' }}>
                   <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-                    <Button type="primary" block size="large">
+                    <Button
+                      type="primary"
+                      block
+                      size="large"
+                      onClick={showModalAppointment}
+                      disabled={propertyDetail?.creator === currentUser.username}
+                    >
                       Đặt hẹn
                     </Button>
                     <Text type="secondary" style={{ textAlign: 'center', display: 'block' }}>
-                      Tour for free, no strings attached
+                      Đặt hẹn đến xem bất động sản
                     </Text>
-                    <Button block size="large">
-                      Bắt đầu offer
+                    <Button
+                      block
+                      size="large"
+                      onClick={() => navigate(`/deposit/${propertyId}`)}
+                      disabled={propertyDetail?.creator === currentUser.username}
+                    >
+                      Đặt cọc
                     </Button>
                     <Text type="secondary" style={{ textAlign: 'center', display: 'block' }}>
-                      Make a winning offer with the help of a local agent
+                      Tạo thỏa thuận đặt cọc
                     </Text>
                   </Space>
                 </Card>
               </div>
             </Col>
           </Row>
+
+          {/* Modal Appointment */}
+          <AppointmentModal
+            isModalAppointmentVisible={isModalAppointmentVisible}
+            property={propertyDetail}
+            onCancel={handleCancelAppointmentModal}
+            type="create"
+          />
         </div>
       </PageContainer>
     </>

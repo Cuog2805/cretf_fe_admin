@@ -1,120 +1,59 @@
-import { AvatarDropdown, AvatarName, Footer, Question, SelectLang } from '@/components';
-//import { currentUser as queryCurrentUser } from '@/services/ant-design-pro/api';
+import { AvatarName, Footer, Question, SelectLang } from '@/components';
 import { HomeOutlined, InfoCircleOutlined, LinkOutlined, PhoneOutlined, SearchOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, ConfigProvider, Dropdown, Input, Menu, Space } from 'antd';
 import type { Settings as LayoutSettings } from '@ant-design/pro-components';
-import { ProLayout, SettingDrawer } from '@ant-design/pro-components';
 import type { RunTimeLayoutConfig } from '@umijs/max';
 import { history, Link } from '@umijs/max';
 import React from 'react';
 import defaultSettings from '../config/defaultSettings';
 import { errorConfig } from './requestErrorConfig';
 import Navbar from './components/Header';
-import useCategoryShareds from './selectors/useCategoryShareds';
-import { buildRoutesFromDB, mergeRoutes } from './utils/routeUtil';
-import routes from '../config/routes';
+import { getCurrentUser } from './services/apis/userController';
+import { getToken } from './selectors/authService';
+import AvatarDropdown from '@/components/RightContent/AvatarDropdown';
 
 const isDev = process.env.NODE_ENV === 'development';
-const loginPath = '/user/login';
+const loginPath = '/auth/login';
 
 /**
  * @see  https://umijs.org/zh-CN/plugins/plugin-initial-state
  * */
 export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
-  //currentUser?: API.CurrentUser;
-  currentUser?: any;
+  currentUser?: API.UsersDTO;
   loading?: boolean;
-  //fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
+  fetchUserInfo?: () => Promise<any | undefined>;
 }> {
-  // 如果不是登录页面，执行
-  const { location } = history;
+  const fetchUserInfo = async () => {
+    try {
+      const token = getToken();
+      if (!token) return undefined;
+      const response = await getCurrentUser();
+      return response?.data;
+    } catch (error) {
+      return undefined;
+    }
+  };
 
+  // Nếu đang ở trang đăng nhập: không cần lấy thông tin người dùng
+  if (window.location.pathname === '/auth/login') {
+    return {
+      fetchUserInfo,
+      currentUser: undefined,
+      settings: defaultSettings as Partial<LayoutSettings>,
+    };
+  }
+
+  // Các trang khác: lấy thông tin user
+  const currentUser = await fetchUserInfo();
   return {
+    fetchUserInfo,
+    currentUser,
     settings: defaultSettings as Partial<LayoutSettings>,
   };
 }
 
-// //ProLayout 支持的api https://procomponents.ant.design/components/layout
-// export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) => {
-//   return {
-//     // actionsRender: () => [<Question key="doc" />, <SelectLang key="SelectLang" />],
-//     // avatarProps: {
-//     //   src: initialState?.currentUser?.avatar,
-//     //   title: <AvatarName />,
-//     //   render: (_, avatarChildren) => {
-//     //     return <AvatarDropdown>{avatarChildren}</AvatarDropdown>;
-//     //   },
-//     // },
-//     // waterMarkProps: {
-//     //   content: initialState?.currentUser?.name,
-//     // },
-//     // footerRender: () => <Footer />,
-//     // onPageChange: () => {
-//     //   const { location } = history;
-//     //   // 如果没有登录，重定向到 login
-//     //   if ( location.pathname !== loginPath) {
-//     //     history.push(loginPath);
-//     //   }
-//     // },
-//     // bgLayoutImgList: [
-//     //   {
-//     //     src: 'https://mdn.alipayobjects.com/yuyan_qk0oxh/afts/img/D2LWSqNny4sAAAAAAAAAAAAAFl94AQBr',
-//     //     left: 85,
-//     //     bottom: 100,
-//     //     height: '303px',
-//     //   },
-//     //   {
-//     //     src: 'https://mdn.alipayobjects.com/yuyan_qk0oxh/afts/img/C2TWRpJpiC0AAAAAAAAAAAAAFl94AQBr',
-//     //     bottom: -68,
-//     //     right: -45,
-//     //     height: '303px',
-//     //   },
-//     //   {
-//     //     src: 'https://mdn.alipayobjects.com/yuyan_qk0oxh/afts/img/F6vSTbj8KpYAAAAAAAAAAAAAFl94AQBr',
-//     //     bottom: 0,
-//     //     left: 0,
-//     //     width: '331px',
-//     //   },
-//     // ],
-//     // links: isDev
-//     //   ? [
-//     //       <Link key="openapi" to="/umi/plugin/openapi" target="_blank">
-//     //         <LinkOutlined />
-//     //         <span>OpenAPI 文档</span>
-//     //       </Link>,
-//     //     ]
-//     //   : [],
-//     // menuHeaderRender: undefined,
-//     // // 自定义 403 页面
-//     // // unAccessible: <div>unAccessible</div>,
-//     // // 增加一个 loading 的状态
-//     childrenRender: (children) => {
-//       // if (initialState?.loading) return <PageLoading />;
-//       return (
-//         <>
-//           {children}
-//           {/* {isDev && (
-//             <SettingDrawer
-//               disableUrlParams
-//               enableDarkTheme
-//               settings={initialState?.settings}
-//               onSettingChange={(settings) => {
-//                 setInitialState((preInitialState) => ({
-//                   ...preInitialState,
-//                   settings,
-//                 }));
-//               }}
-//             />
-//           )} */}
-//         </>
-//       );
-//     },
-//     ...initialState?.settings,
-//   };
-// };
-
-export const layout: RunTimeLayoutConfig= ({ initialState }) => {
+export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) => {
   return {
     childrenRender: (children) => {
       return (
@@ -138,6 +77,15 @@ export const layout: RunTimeLayoutConfig= ({ initialState }) => {
     collapsed: false,
     collapsedButtonRender: false,
     headerHeight: 60,
+    onPageChange: () => {
+      const { location } = history;
+      // If not logged in, redirect to login page
+      if (!initialState?.currentUser && location.pathname !== loginPath) {
+        history.push(loginPath);
+      } else if (initialState?.currentUser && location.pathname === loginPath) {
+        history.push('/welcome');
+      }
+    },
     ...initialState?.settings
   };
 };

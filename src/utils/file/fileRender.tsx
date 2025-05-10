@@ -32,8 +32,6 @@ const FileRenderer: React.FC<FileRendererProps> = ({
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  console.log(fileData);
-
   useEffect(() => {
     const fetchFileData = async () => {
       if (!fileId) {
