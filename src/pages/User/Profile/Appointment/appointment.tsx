@@ -26,9 +26,11 @@ import {
   PlusOutlined,
 } from '@ant-design/icons';
 import {
+  confirmAppointment,
   createAppointment,
   deleteAppointment,
   getAppointmentBySearch,
+  rejectAppointment,
   updateAppointment,
 } from '@/services/apis/appointmentController';
 import dayjs from 'dayjs';
@@ -37,11 +39,14 @@ import useStatus from '@/selectors/useStatus';
 import { PageContainer } from '@ant-design/pro-components';
 import TabPane from 'antd/es/tabs/TabPane';
 import AppointmentModal from './appointment-modal';
-import usePagination from '@/utils/usePagination';
+import usePagination from '@/components/EditableTable/usePagination';
+import { useCurrentUser } from '@/selectors/useCurrentUser';
 
 const { Title, Paragraph } = Typography;
 
 const Appointment: React.FC = () => {
+  const currentUser = useCurrentUser();
+
   const [appointments, setAppointments] = useState<API.AppointmentDTO[]>([]);
   const [appointmentsUpdate, setAppointmentsUpdate] = useState<API.AppointmentDTO | null>(null);
   const [isModalAppointmentVisible, setIsModalAppointmentVisible] = useState(false);
@@ -76,12 +81,8 @@ const Appointment: React.FC = () => {
       });
   };
 
-  const handleCancelAppointment = async (appointment: API.AppointmentDTO) => {
-    const body: API.AppointmentDTO = {
-      ...appointment,
-      statusId: appointmentStatusList.find((s) => s.code === 'CANCELLED')?.statusId,
-    };
-    updateAppointment(body)
+  const handleCancelAppointment = async (id: string) => {
+    deleteAppointment({ id: id})
       .then((resp) => {
         if (resp.success) {
           message.success('Đã hủy cuộc hẹn thành công');
@@ -92,6 +93,36 @@ const Appointment: React.FC = () => {
       })
       .catch((error) => {
         message.error('Có lỗi xảy ra khi hủy cuộc hẹn');
+      });
+  };
+
+  const handleConfirmAppointment = async (id: string) => {
+    confirmAppointment({ appointmentId: id })
+      .then((resp) => {
+        if (resp.success) {
+          message.success('Đã xác nhận cuộc hẹn thành công');
+          fetchAppointments();
+        } else {
+          message.error('Xác nhận cuộc hẹn thất bại');
+        }
+      })
+      .catch((error) => {
+        message.error('Có lỗi xảy ra khi xác nhận cuộc hẹn');
+      });
+  };
+
+  const handleRejectAppointment = async (id: string) => {
+    rejectAppointment({ appointmentId: id })
+      .then((resp) => {
+        if (resp.success) {
+          message.success('Đã từ chối cuộc hẹn thành công');
+          fetchAppointments();
+        } else {
+          message.error('Từ chối cuộc hẹn thất bại');
+        }
+      })
+      .catch((error) => {
+        message.error('Có lỗi xảy ra khi từ chối cuộc hẹn');
       });
   };
 
@@ -160,12 +191,12 @@ const Appointment: React.FC = () => {
       key: 'seller',
       render: (seller: string) => seller || '___',
     },
-    {
-      title: 'Người đại diện',
-      dataIndex: 'agent',
-      key: 'agent',
-      render: (agent: string) => agent || '___',
-    },
+    // {
+    //   title: 'Người đại diện',
+    //   dataIndex: 'agent',
+    //   key: 'agent',
+    //   render: (agent: string) => agent || '___',
+    // },
     {
       title: 'Ghi chú',
       dataIndex: 'note',
@@ -183,37 +214,85 @@ const Appointment: React.FC = () => {
     {
       title: 'Hành động',
       key: 'actions',
-      render: (_: any, record: any) => (
-        <Space>
-          <Button
-            disabled={
-              appointmentStatusList.find((s) => s.statusId === record.statusId)?.code ===
-              'SCHEDULED'
-            }
-            onClick={() => {
-              showModal(record);
-            }}
-          >
-            Rời lịch
-          </Button>
-          <Popconfirm
-            title="Bạn có chắc muốn hủy cuộc hẹn này không?"
-            onConfirm={() => handleCancelAppointment(record)}
-            okText="Đồng ý"
-            cancelText="Hủy"
-          >
-            <Button
-              disabled={
-                appointmentStatusList.find((s) => s.statusId === record.statusId)?.code ===
-                'CANCELLED'
-              }
-              danger
-            >
-              Hủy hẹn
-            </Button>
-          </Popconfirm>
-        </Space>
-      ),
+      render: (_: any, record: any) =>
+        record.buyer === currentUser?.username ? (
+          <>
+            <Space>
+              <Button
+                disabled={
+                  !(
+                    appointmentStatusList.find((s) => s.statusId === record.statusId)?.code ===
+                    'PROCESS'
+                  )
+                }
+                onClick={() => {
+                  showModal(record);
+                }}
+              >
+                Rời lịch
+              </Button>
+              <Popconfirm
+                title="Bạn có chắc muốn hủy cuộc hẹn này không?"
+                onConfirm={() => handleCancelAppointment(record.appointmentId)}
+                okText="Đồng ý"
+                cancelText="Hủy"
+              >
+                <Button
+                  disabled={
+                    !(
+                      appointmentStatusList.find((s) => s.statusId === record.statusId)?.code ===
+                      'PROCESS'
+                    )
+                  }
+                  danger
+                >
+                  Hủy hẹn
+                </Button>
+              </Popconfirm>
+            </Space>
+          </>
+        ) : (
+          <>
+            <Space>
+              <Popconfirm
+                title="Bạn có chắc muốn xác nhận cuộc hẹn này không?"
+                onConfirm={() => handleConfirmAppointment(record.appointmentId)}
+                okText="Đồng ý"
+                cancelText="Hủy"
+              >
+                <Button
+                  disabled={
+                    !(
+                      appointmentStatusList.find((s) => s.statusId === record.statusId)?.code ===
+                      'PROCESS'
+                    )
+                  }
+                  danger
+                >
+                  Xác nhận
+                </Button>
+              </Popconfirm>
+              <Popconfirm
+                title="Bạn có chắc muốn từ chối cuộc hẹn này không?"
+                onConfirm={() => handleRejectAppointment(record.appointmentId)}
+                okText="Đồng ý"
+                cancelText="Hủy"
+              >
+                <Button
+                  disabled={
+                    !(
+                      appointmentStatusList.find((s) => s.statusId === record.statusId)?.code ===
+                      'PROCESS'
+                    )
+                  }
+                  danger
+                >
+                  Từ chối
+                </Button>
+              </Popconfirm>
+            </Space>
+          </>
+        ),
     },
   ];
 

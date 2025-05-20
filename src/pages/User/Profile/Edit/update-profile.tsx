@@ -1,8 +1,8 @@
 import useCategoryShareds from '@/selectors/useCategoryShareds';
 import { useCurrentUser } from '@/selectors/useCurrentUser';
 import { updateUser } from '@/services/apis/userController';
-import FileRenderer from '@/utils/file/fileRender';
-import FileUpload from '@/utils/file/fileUpload';
+import FileRenderer from '@/components/FIle/fileRender';
+import FileUpload from '@/components/FIle/fileUpload';
 import { Button, Card, Col, Form, Input, message, Row, Select, Typography } from 'antd';
 import FormItem from 'antd/es/form/FormItem';
 import TextArea from 'antd/es/input/TextArea';

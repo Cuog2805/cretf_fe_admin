@@ -2,37 +2,51 @@
 /* eslint-disable */
 import { request } from '@umijs/max';
 
-/** 此处后端没有提供注释 GET /users */
-export async function getAllUsers(options?: { [key: string]: any }) {
-  return request<API.ResponseListUsersDTO>('/users', {
-    method: 'GET',
-    ...(options || {}),
-  });
-}
-
-/** 此处后端没有提供注释 GET /users/${param0} */
-export async function getUserById(
-  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.getUserByIdParams,
-  options?: { [key: string]: any },
-) {
-  const { userId: param0, ...queryParams } = params;
-  return request<API.ResponseUsersDTO>(`/users/${param0}`, {
-    method: 'GET',
-    params: { ...queryParams },
-    ...(options || {}),
-  });
-}
-
-/** 此处后端没有提供注释 DELETE /users/${param0} */
+/** 此处后端没有提供注释 DELETE /users/deleteUser/${param0} */
 export async function deleteUser(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
   params: API.deleteUserParams,
   options?: { [key: string]: any },
 ) {
   const { userId: param0, ...queryParams } = params;
-  return request<API.ResponseVoid>(`/users/${param0}`, {
+  return request<API.ResponseVoid>(`/users/deleteUser/${param0}`, {
     method: 'DELETE',
+    params: { ...queryParams },
+    ...(options || {}),
+  });
+}
+
+/** 此处后端没有提供注释 GET /users/getAllUsers */
+export async function getAllUsers(options?: { [key: string]: any }) {
+  return request<API.ResponseListUsersDTO>('/users/getAllUsers', {
+    method: 'GET',
+    ...(options || {}),
+  });
+}
+
+/** 此处后端没有提供注释 GET /users/getUserById/${param0} */
+export async function getUserById(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.getUserByIdParams,
+  options?: { [key: string]: any },
+) {
+  const { userId: param0, ...queryParams } = params;
+  return request<API.ResponseUsersDTO>(`/users/getUserById/${param0}`, {
+    method: 'GET',
+    params: { ...queryParams },
+    ...(options || {}),
+  });
+}
+
+/** 此处后端没有提供注释 POST /users/lockUser/${param0} */
+export async function lockUser(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.lockUserParams,
+  options?: { [key: string]: any },
+) {
+  const { userId: param0, ...queryParams } = params;
+  return request<API.ResponseString>(`/users/lockUser/${param0}`, {
+    method: 'POST',
     params: { ...queryParams },
     ...(options || {}),
   });
@@ -42,6 +56,20 @@ export async function deleteUser(
 export async function getCurrentUser(options?: { [key: string]: any }) {
   return request<API.ResponseUsersDTO>('/users/me', {
     method: 'GET',
+    ...(options || {}),
+  });
+}
+
+/** 此处后端没有提供注释 POST /users/unlockUser/${param0} */
+export async function unlockUser(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.unlockUserParams,
+  options?: { [key: string]: any },
+) {
+  const { userId: param0, ...queryParams } = params;
+  return request<API.ResponseString>(`/users/unlockUser/${param0}`, {
+    method: 'POST',
+    params: { ...queryParams },
     ...(options || {}),
   });
 }

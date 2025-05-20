@@ -40,7 +40,7 @@ const AppointmentModal = (props: {
   const { locationList } = useLocation();
   
   // Finding the scheduled status ID once and storing it
-  const scheduledStatusId = appointmentStatusList.find((s) => s.code === 'SCHEDULED')?.statusId;
+  const scheduledStatusId = appointmentStatusList.find((s) => s.code === 'PROCESS')?.statusId;
 
   // Set initial values based on whether we're creating or updating
   useEffect(() => {
@@ -49,9 +49,9 @@ const AppointmentModal = (props: {
       if (props.type === 'create') {
         formAppointment.setFieldsValue({
           propertyId: props.property?.propertyId,
-          buyerId: currentUser?.userId,
-          sellerId: currentUser?.userId,
-          agentId: currentUser?.userId,
+          buyerId: currentUser?.username,
+          sellerId: props.property?.creator,
+          agentId: props.property?.creator,
           statusId: scheduledStatusId, // Using the scheduled status ID
         });
       } else if (props.type === 'update' && props.appointmentUpdate) {

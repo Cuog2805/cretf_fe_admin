@@ -1,4 +1,4 @@
-import { flatToTree } from "@/utils/treeUtil";
+import { flatToTree } from "@/components/tree/treeUtil";
 import { useModel } from "@umijs/max";
 import { useEffect, useMemo } from "react";
 

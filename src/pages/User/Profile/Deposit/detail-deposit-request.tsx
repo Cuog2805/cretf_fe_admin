@@ -2,11 +2,19 @@ import usePagination from '@/components/EditableTable/usePagination';
 import { useCurrentUser } from '@/selectors/useCurrentUser';
 import useStatus from '@/selectors/useStatus';
 import {
+  confirmDepositContract,
   deleteDepositContract,
   getAllDepositContract,
+  rejectDepositContract,
   searchDepositContract,
 } from '@/services/apis/depositContractController';
-import { DeleteOutlined, DownloadOutlined, SearchOutlined } from '@ant-design/icons';
+import {
+  CheckOutlined,
+  CloseOutlined,
+  DeleteOutlined,
+  DownloadOutlined,
+  SearchOutlined,
+} from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { Button, Card, Form, Input, message, Select, Space, Table, Tag, Tooltip } from 'antd';
 import { get } from 'lodash';
@@ -36,7 +44,7 @@ const DepositRequest = () => {
       };
       const body: API.DepositContractDTO = {
         statusId: values.statusId,
-        buyer: currentUser?.username,
+        seller: currentUser?.username,
       };
       console.log('body', body);
       getAllDepositContract(page, body).then((resp) => {
@@ -46,14 +54,26 @@ const DepositRequest = () => {
     });
   };
 
-  const handleDelete = async (templateId: string) => {
+  const handleConfirm = async (id: string) => {
     try {
-      deleteDepositContract({ templateId: templateId }).then((resp) => {
-        message.success('Xóa mẫu thành công');
+      confirmDepositContract({ depositContractId: id }).then((resp) => {
+        message.success('Xác nhận thành công');
         handleSearch();
       });
     } catch (error) {
-      message.error('Không thể xóa mẫu');
+      message.error('Không thể Xác nhận');
+      console.error(error);
+    }
+  };
+
+  const handleReject = async (id: string) => {
+    try {
+      rejectDepositContract({ depositContractId: id }).then((resp) => {
+        message.success('Từ chối thành công');
+        handleSearch();
+      });
+    } catch (error) {
+      message.error('Không thể Từ chối');
       console.error(error);
     }
   };
@@ -103,11 +123,21 @@ const DepositRequest = () => {
               onClick={() => window.open(record.downloadUrl, '_blank')}
             ></Button>
           </Tooltip>
-          <Tooltip title="Xóa">
+          <Tooltip title="Đồng ý">
+            <Button
+              type="primary"
+              danger
+              icon={<CheckOutlined />}
+              disabled={!(record.statusId === depositStatusList.find((s) => s.code === 'PROCESS')?.statusId)}
+              onClick={() => handleConfirm(record.depositContractId)}
+            ></Button>
+          </Tooltip>
+          <Tooltip title="Từ chối">
             <Button
               danger
-              icon={<DeleteOutlined />}
-              onClick={() => handleDelete(record.templateId)}
+              icon={<CloseOutlined />}
+              disabled={!(record.statusId === depositStatusList.find((s) => s.code === 'PROCESS')?.statusId)}
+              onClick={() => handleReject(record.depositContractId)}
             ></Button>
           </Tooltip>
         </Space>
@@ -117,7 +147,7 @@ const DepositRequest = () => {
 
   return (
     <>
-      <Card title="Danh sách hợp đồng đang yêu cầu">
+      <Card title="Danh sách hợp đồng yêu cầu đến bạn">
         <Form
           form={searchForm}
           onFinish={handleSearch}

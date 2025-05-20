@@ -80,6 +80,30 @@ export async function getOneDetailProperty(
   });
 }
 
+/** 此处后端没有提供注释 POST /property/lockProperty */
+export async function lockProperty(body: API.PropertyDTO, options?: { [key: string]: any }) {
+  return request<API.ResponseString>('/property/lockProperty', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** 此处后端没有提供注释 POST /property/unLockProperty */
+export async function unLockProperty(body: API.PropertyDTO, options?: { [key: string]: any }) {
+  return request<API.ResponseString>('/property/unLockProperty', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
 /** 此处后端没有提供注释 POST /property/updateProperty */
 export async function updateProperty(body: API.PropertyDTO, options?: { [key: string]: any }) {
   return request<API.ResponsePropertyDTO>('/property/updateProperty', {

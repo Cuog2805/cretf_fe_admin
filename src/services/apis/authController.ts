@@ -2,6 +2,18 @@
 /* eslint-disable */
 import { request } from '@umijs/max';
 
+/** 此处后端没有提供注释 POST /auth/admin/login */
+export async function adminLogin(body: API.UsersDTO, options?: { [key: string]: any }) {
+  return request<API.ResponseUsersDTO>('/auth/admin/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
 /** 此处后端没有提供注释 POST /auth/change-password */
 export async function changePassword(body: API.UsersDTO, options?: { [key: string]: any }) {
   return request<API.ResponseString>('/auth/change-password', {

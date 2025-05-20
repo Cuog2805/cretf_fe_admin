@@ -42,11 +42,6 @@ export default [
         component: './Welcome',
       },
       {
-        name: 'landing-page',
-        path: '/landing-page',
-        component: './LandingPage',
-      },
-      {
         path: '/buy',
         redirect: '/buy/houses-for-sale',
       },
@@ -54,6 +49,16 @@ export default [
         name: 'Mua nhà',
         path: '/buy/houses-for-sale',
         component: './BuyPage',
+      },
+      {
+        name: 'Mua nhà',
+        path: '/buy/houses-for-sale/:locationId',
+        component: './BuyPage',
+      },
+      {
+        name: 'Xem chi tiết',
+        path: '/buy/houses-for-sale/detail/:propertyId',
+        component: './BuyPage/Detail',
       },
       {
         name: 'Mua căn hộ',
@@ -66,8 +71,17 @@ export default [
         component: './BuyPage',
       },
       {
+        path: '/rent',
+        redirect: '/rent/houses-for-rent',
+      },
+      {
         name: 'Thuê nhà',
         path: '/rent/houses-for-rent',
+        component: './BuyPage',
+      },
+      {
+        name: 'Thuê nhà',
+        path: '/rent/houses-for-rent/:locationId',
         component: './BuyPage',
       },
       {
@@ -76,24 +90,13 @@ export default [
         component: './BuyPage',
       },
       {
-        name: 'Xem chi tiết',
-        path: '/buy/houses-for-sale/detail/:propertyId',
-        component: './BuyPage/Detail',
+        path: '/sell',
+        redirect: '/sell/my-homes-valuation',
       },
       {
-        name: 'Thêm mới',
-        path: '/buy/houses-for-sale/create',
-        component: './BuyPage/Create',
-      },
-      {
-        name: 'rent',
-        path: '/rent',
-        component: './LandingPage',
-      },
-      {
-        name: 'Cuộc hẹn',
-        path: '/appointment',
-        component: './Appointment',
+        name: 'Định giá bất động sản',
+        path: '/sell/my-homes-valuation',
+        component: './PredictPrice',
       },
       {
         name: 'Đặt cọc',
@@ -114,6 +117,11 @@ export default [
         name: 'Đổi mật khẩu',
         path: '/account/profile/password',
         component: './User/Profile/Password',
+      },
+      {
+        name: 'Cuộc hẹn',
+        path: '/account/profile/appointment',
+        component: './User/Profile/Appointment',
       },
       {
         name: 'Bất động sản của tôi',

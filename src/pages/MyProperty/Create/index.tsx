@@ -23,7 +23,7 @@ import useStatus from '@/selectors/useStatus';
 import useScale from '@/selectors/useScale';
 import usePropertyType from '@/selectors/usePropertyType';
 import useAmenity from '@/selectors/useAmenity';
-import EditableTable from '@/utils/EditableTable';
+import EditableTable from '@/components/EditableTable/EditableTable';
 import {
   createProperty,
   getOneDetailProperty,
@@ -33,9 +33,11 @@ import { useCurrentUser } from '@/selectors/useCurrentUser';
 import { useParams, history } from 'umi';
 import moment from 'moment';
 import PropertyFilesUpload from '../Create/property-file-upload';
-import FileUpload from '@/utils/file/fileUpload';
+import FileUpload from '@/components/FIle/fileUpload';
 import useLocations from '@/selectors/useLocation';
 import dayjs from 'dayjs';
+import CoordinatesPicker from '@/components/Map/CoordinatesPicker';
+import CustomTreeSelect from '@/components/tree/treeSelectCustom';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -103,6 +105,7 @@ const MyPropertyForm = () => {
               addressSpecific: response.data.addressSpecific,
               propertyTypeId: response.data.propertyTypeId,
               statusIds: response.data.statusIds,
+              locationId: response.data.locationId,
               price: response.data.propertyPriceNewest?.value,
               priceScaleId: response.data.propertyPriceNewest?.scaleId,
               buildIn: response.data.buildIn ? moment(response.data.buildIn) : null,
@@ -110,6 +113,12 @@ const MyPropertyForm = () => {
               depositScaleUnit: response.data.depositDTO?.scaleUnit,
               depositDueDate: response.data.depositDTO?.dueDate,
               depositNote: response.data.depositDTO?.note,
+              coordinates: response.data.coordinatesDTO
+                ? {
+                    latitude: response.data.coordinatesDTO.latitude,
+                    longitude: response.data.coordinatesDTO.longitude,
+                  }
+                : undefined,
             };
 
             form.setFieldsValue(formValues);
@@ -155,10 +164,14 @@ const MyPropertyForm = () => {
         propertyPurpose === 'SOLD'
           ? propertySoldStatusList.find((d) => d.code === 'FORSOLD')?.statusId
           : propertyRentStatusList.find((d) => d.code === 'FORRENT')?.statusId;
-
+      const defaultScale =
+        propertyPurpose === 'SOLD'
+          ? moneyScaleList.find((d) => d.scaleId === 'SCALE_BILLION_VND')?.scaleId
+          : moneyScaleList.find((d) => d.scaleId === 'SCALE_MILLION_VND_PER_MONTH')?.scaleId;
       // Set initial values
       form.setFieldsValue({
         propertyPurpose: propertyPurpose,
+        priceScaleId: defaultScale,
         statusIds: defaultStatus ? [defaultStatus] : [],
       });
 
@@ -180,9 +193,13 @@ const MyPropertyForm = () => {
         propertyPurpose === 'SOLD'
           ? propertySoldStatusList.find((d) => d.code === 'FORSOLD')?.statusId
           : propertyRentStatusList.find((d) => d.code === 'FORRENT')?.statusId;
-
+      const defaultScale =
+        propertyPurpose === 'SOLD'
+          ? moneyScaleList.find((d) => d.scaleId === 'SCALE_BILLION_VND')?.scaleId
+          : moneyScaleList.find((d) => d.scaleId === 'SCALE_MILLION_VND_PER_MONTH')?.scaleId;
       form.setFieldsValue({
         statusIds: defaultStatus ? [defaultStatus] : [],
+        priceScaleId: defaultScale,
       });
     }
   }, [
@@ -201,6 +218,10 @@ const MyPropertyForm = () => {
         propertyPriceNewest: {
           value: values.price,
           scaleUnit: values.priceScaleId,
+          // scaleUnit:
+          //   values.type === 'SOLD'
+          //     ? moneyScaleList.find((d) => d.scaleId === 'SCALE_BILLION_VND')?.scaleId
+          //     : moneyScaleList.find((d) => d.scaleId === 'SCALE_MILLION_VND_PER_MONTH')?.scaleId,
         },
         depositDTO: {
           value: values.depositValue,
@@ -214,9 +235,20 @@ const MyPropertyForm = () => {
         modifier: isUpdateMode ? currentUser?.username : undefined,
         dateModified: isUpdateMode ? new Date().toISOString() : undefined,
         type: propertyPurpose,
+        coordinatesDTO: values.coordinates
+          ? {
+              latitude: values.coordinates.latitude,
+              longitude: values.coordinates.longitude,
+              type: 'PROPERTY',
+            }
+          : {
+              latitude: 21.0278,
+              longitude: 105.8342,
+              type: 'PROPERTY',
+            },
       };
 
-      console.log('Submitting property:', body);
+      console.log('property submit ', body);
 
       if (isUpdateMode) {
         updateProperty(body)
@@ -348,9 +380,9 @@ const MyPropertyForm = () => {
                   label="Khu vực"
                   rules={[{ required: true, message: 'Vui lòng nhập địa chỉ' }]}
                 >
-                  <TreeSelect
+                  <CustomTreeSelect
+                    disabled={isUpdateMode}
                     showSearch
-                    dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                     treeData={locationTree}
                     fieldNames={{ label: 'name', value: 'locationId', children: 'children' }}
                     placeholder="Chọn khu vực"
@@ -369,7 +401,7 @@ const MyPropertyForm = () => {
                   label="Địa chỉ cụ thể"
                   rules={[{ required: true, message: 'Vui lòng nhập địa chỉ' }]}
                 >
-                  <Input placeholder="Nhập địa chỉ tài sản" />
+                  <Input placeholder="Nhập địa chỉ tài sản" disabled={isUpdateMode} />
                 </Form.Item>
               </Col>
             </Row>
@@ -381,7 +413,7 @@ const MyPropertyForm = () => {
                   label="Tên tài sản"
                   rules={[{ required: true, message: 'Vui lòng nhập tên tài sản' }]}
                 >
-                  <Input placeholder="Nhập tên tài sản" />
+                  <Input placeholder="Nhập tên tài sản" disabled={isUpdateMode} />
                 </Form.Item>
               </Col>
 
@@ -391,7 +423,7 @@ const MyPropertyForm = () => {
                   label="Loại tài sản"
                   rules={[{ required: true, message: 'Vui lòng chọn loại tài sản' }]}
                 >
-                  <Select placeholder="Chọn loại tài sản">
+                  <Select placeholder="Chọn loại tài sản" disabled={isUpdateMode}>
                     {propertyTypeList.map((type) => (
                       <Option key={type.propertyTypeId} value={type.propertyTypeId}>
                         {type.name}
@@ -421,7 +453,7 @@ const MyPropertyForm = () => {
                   label="Trạng thái"
                   rules={[{ required: true, message: 'Vui lòng chọn trạng thái' }]}
                 >
-                  <Select mode="multiple" placeholder="Chọn trạng thái" disabled={!isUpdateMode}>
+                  <Select mode="multiple" placeholder="Chọn trạng thái" disabled>
                     {(propertyPurpose === 'SOLD'
                       ? propertySoldStatusList
                       : propertyRentStatusList
@@ -463,7 +495,7 @@ const MyPropertyForm = () => {
                   label="Đơn vị tiền tệ"
                   rules={[{ required: true, message: 'Vui lòng chọn đơn vị tiền tệ' }]}
                 >
-                  <Select placeholder="Chọn đơn vị tiền tệ">
+                  <Select placeholder="Chọn đơn vị tiền tệ" disabled>
                     {moneyScaleList.map((option) => (
                       <Option key={option.scaleId} value={option.scaleId}>
                         {option.unit}
@@ -555,6 +587,23 @@ const MyPropertyForm = () => {
               <PropertyFilesUpload onChange={handlePropertyFilesChange} />
             )}
           </Form.Item>
+
+          <Divider />
+
+          <Card>
+            <Row gutter={16}>
+              <Col span={24}>
+                <Form.Item
+                  name="coordinates"
+                  label=""
+                  getValueFromEvent={(value) => value}
+                  getValueProps={(value) => ({ value })}
+                >
+                  <CoordinatesPicker />
+                </Form.Item>
+              </Col>
+            </Row>
+          </Card>
 
           <Divider />
           <Card>

@@ -1,25 +1,24 @@
 import { PageContainer } from '@ant-design/pro-components';
-import { Col, Divider, Row, Typography } from 'antd';
+import { Col, Row, Typography } from 'antd';
 import ProfileNavigate from '../navigate-profile';
-import Deposit from './detail-deposit';
-import DepositRequest from './detail-deposit-request';
+import Appointment from './appointment';
 
 const { Title } = Typography;
 
-const DepositDetail = () => {
+const AppointmentDetail = () => {
   return (
     <PageContainer>
       <Row gutter={32}>
         <Col span={6}>
           <ProfileNavigate />
         </Col>
+
         <Col span={18}>
-          <Deposit />
-          <DepositRequest />
+          <Appointment />
         </Col>
       </Row>
     </PageContainer>
   );
 };
 
-export default DepositDetail;
+export default AppointmentDetail;

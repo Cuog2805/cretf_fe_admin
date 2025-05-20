@@ -23,18 +23,18 @@ const ProfileNavigate = () => {
   const location = useLocation();
   const currentUser = useCurrentUser();
 
-  // Xác định menu item đang active dựa trên đường dẫn hiện tại
   const getSelectedKey = () => {
     const path = location.pathname;
     if (path.includes('/account/profile/edit')) return 'edit';
     if (path.includes('/account/profile/purchase')) return 'purchase';
-    if (path.includes('/account/profile/message')) return 'message';
     if (path.includes('/account/profile/password')) return 'password';
+    if (path.includes('/account/profile/deposit')) return 'deposit';
+    if (path.includes('/account/profile/appointment')) return 'appointment';
+    if (path.includes('/account/profile/message')) return 'message';
     return 'profile';
   };
 
   const handleMenuClick = (e: any) => {
-    // Điều hướng đến trang tương ứng với menu item được chọn
     if (e.key === 'profile') {
       navigate('/account/profile/detail');
     } else {
@@ -64,8 +64,8 @@ const ProfileNavigate = () => {
       icon: <ShoppingOutlined />,
     },
     {
-      key: 'purchase',
-      label: 'Lịch sử giao dịch',
+      key: 'appointment',
+      label: 'Danh sách cuộc hẹn',
       icon: <ShoppingOutlined />,
     },
     {

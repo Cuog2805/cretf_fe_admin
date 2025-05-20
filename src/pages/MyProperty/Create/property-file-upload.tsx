@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Tabs, Card, Typography, Divider, Row, Col, Alert, Button, Space, Empty, Modal, message } from 'antd';
 import { DeleteOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons';
-import FileUpload from '@/utils/file/fileUpload';
-import FileRenderer from '@/utils/file/fileRender';
+import FileUpload from '@/components/FIle/fileUpload';
+import FileRenderer from '@/components/FIle/fileRender';
 import { deleteFile } from '@/services/apis/fileController';
 
 const { Title, Text } = Typography;

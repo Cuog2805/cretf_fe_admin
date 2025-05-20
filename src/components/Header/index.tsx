@@ -1,19 +1,34 @@
-import { Input, Menu, Dropdown, Avatar, Button, Space, Typography, Row, Col } from 'antd';
-import { SearchOutlined, UserOutlined, DownOutlined, MenuOutlined } from '@ant-design/icons';
+import { Input, Menu, Dropdown, Avatar, Button, Space, Typography, Row, Col, Form } from 'antd';
+import {
+  SearchOutlined,
+  UserOutlined,
+  DownOutlined,
+  MenuOutlined,
+  EnvironmentOutlined,
+} from '@ant-design/icons';
 import { useState, useEffect } from 'react';
 import useCategoryShareds from '@/selectors/useCategoryShareds';
-import { flatToTree, flatToTreeCustom } from '@/utils/treeUtil';
+import {
+  findIdAndNodeChildrenIds,
+  findNodeById,
+  flatToTree,
+  flatToTreeCustom,
+} from '@/components/tree/treeUtil';
 import { buildRoutesFromDB } from '@/utils/routeUtil';
 import { useNavigate } from '@umijs/max';
+import CustomTreeSelect from '@/components/tree/treeSelectCustom';
+import useLocations from '@/selectors/useLocation';
 
 const { Title } = Typography;
 const { SubMenu } = Menu;
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const [isMobile, setIsMobile] = useState(false);
   const { dmMainMenu } = useCategoryShareds();
+  const { locationTree } = useLocations();
+  const [form] = Form.useForm();
 
+  const [isMobile, setIsMobile] = useState(false);
   const [menuItems, setMenuItems] = useState<any[]>([]);
 
   useEffect(() => {
@@ -30,6 +45,12 @@ const Navbar = () => {
     }
   }, [dmMainMenu]);
 
+  const handleSubmit = () => {
+    form.validateFields().then((values) => {
+      navigate(`/buy/houses-for-sale/${values.locationId ?? ''}`);
+    })
+  };
+  
   const handleClick = ({ key }: any) => {
     // Tìm item theo key
     const selected = findItemByKey(menuItems, key);
@@ -60,25 +81,38 @@ const Navbar = () => {
           <Col span={isMobile ? 4 : 8} style={{ alignContent: 'center' }}>
             <Title
               level={3}
-              style={{ color: 'red', textAlign: 'center', margin: 0, whiteSpace: 'nowrap' }}
+              style={{ color: 'red', textAlign: 'center', margin: 0, whiteSpace: 'nowrap', cursor: 'pointer' }}
+              onClick={() => navigate('/')}
             >
               {isMobile ? 'C' : 'CRANE'}
             </Title>
           </Col>
           <Col span={isMobile ? 20 : 16}>
-            <Row gutter={12} align="middle">
-              <Col span={16}>
-                <Input
-                  placeholder="City, Address, School, Agent, ZIP"
-                  prefix={<SearchOutlined />}
-                />
-              </Col>
-              <Col span={8}>
-                <Button color="danger" variant="filled" style={{ width: '100%' }}>
-                  <SearchOutlined />
-                </Button>
-              </Col>
-            </Row>
+            <Form form={form} layout="horizontal" style={{marginTop: '20px'}}>
+              <Row gutter={12} align="middle">
+                <Col span={16}>
+                  <Form.Item>
+                    <CustomTreeSelect
+                      style={{ width: '100%' }}
+                      dropdownStyle={{ maxHeight: 400, overflow: 'auto', borderRadius: '4px' }}
+                      treeData={locationTree}
+                      fieldNames={{ label: 'name', value: 'locationId', children: 'children' }}
+                      placeholder="Nhập địa điểm"
+                      allowClear
+                      treeDefaultExpandAll
+                      suffixIcon={<EnvironmentOutlined />}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={8}>
+                  <Form.Item>
+                    <Button color="danger" variant="filled" onClick={handleSubmit} style={{ width: '100%' }}>
+                      <SearchOutlined />
+                    </Button>
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Form>
           </Col>
         </Row>
       </Col>

@@ -2,6 +2,21 @@
 /* eslint-disable */
 import { request } from '@umijs/max';
 
+/** 此处后端没有提供注释 POST /depositContract/confirmDepositContract */
+export async function confirmDepositContract(
+  body: API.DepositContractDTO,
+  options?: { [key: string]: any },
+) {
+  return request<API.ResponseString>('/depositContract/confirmDepositContract', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
 /** 此处后端没有提供注释 POST /depositContract/createDepositContract */
 export async function createDepositContract(
   body: API.DepositContractDTO,
@@ -31,10 +46,24 @@ export async function deleteDepositContract(
   });
 }
 
-/** 此处后端没有提供注释 GET /depositContract/getAllDepositContract */
-export async function getAllDepositContract(options?: { [key: string]: any }) {
+/** 此处后端没有提供注释 POST /depositContract/getAllDepositContract */
+export async function getAllDepositContract(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.getAllDepositContractParams,
+  body: API.DepositContractDTO,
+  options?: { [key: string]: any },
+) {
   return request<API.ResponseListDepositContractDTO>('/depositContract/getAllDepositContract', {
-    method: 'GET',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    params: {
+      // size has a default value: 20
+      size: '20',
+      ...params,
+    },
+    data: body,
     ...(options || {}),
   });
 }
@@ -54,6 +83,21 @@ export async function getDepositContractById(
       ...(options || {}),
     },
   );
+}
+
+/** 此处后端没有提供注释 POST /depositContract/rejectDepositContract */
+export async function rejectDepositContract(
+  body: API.DepositContractDTO,
+  options?: { [key: string]: any },
+) {
+  return request<API.ResponseString>('/depositContract/rejectDepositContract', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
 }
 
 /** 此处后端没有提供注释 GET /depositContract/searchDepositContract */

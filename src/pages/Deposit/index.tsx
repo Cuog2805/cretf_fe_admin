@@ -31,6 +31,7 @@ import { useCurrentUser } from '@/selectors/useCurrentUser';
 import useScale from '@/selectors/useScale';
 import usePropertyType from '@/selectors/usePropertyType';
 import useLocations from '@/selectors/useLocation';
+import useStatus from '@/selectors/useStatus';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -41,6 +42,7 @@ const Deposit: React.FC = () => {
   const { moneyScaleList } = useScale();
   const { propertyTypeList } = usePropertyType();
   const { locationList } = useLocations();
+  const { depositStatusList } = useStatus();
 
   const [loading, setLoading] = useState<boolean>(false);
   const [propertyDetail, setPropertyDetail] = useState<API.PropertyDTO | null>(null);
@@ -79,6 +81,7 @@ const Deposit: React.FC = () => {
           ...propertyDetail?.depositDTO,
           scaleUnit: moneyScaleList.find((d) => d.scaleId === propertyDetail?.depositDTO?.scaleUnit)?.unit
         },
+        statusId: depositStatusList.find((d) => d.code === 'PROCESS')?.statusId,
       };
       createDepositContract(body).then((resp) => {
         message.success('Tạo hợp đồng thành công!');

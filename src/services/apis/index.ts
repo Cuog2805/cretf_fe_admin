@@ -5,10 +5,13 @@
 import * as userController from './userController';
 import * as statusController from './statusController';
 import * as scaleController from './scaleController';
+import * as roleController from './roleController';
+import * as publicFacilityController from './publicFacilityController';
 import * as propertyController from './propertyController';
 import * as fileController from './fileController';
 import * as depositContractController from './depositContractController';
 import * as depositController from './depositController';
+import * as dashBoardController from './dashBoardController';
 import * as categorySharedController from './categorySharedController';
 import * as authController from './authController';
 import * as appointmentController from './appointmentController';
@@ -19,10 +22,13 @@ export default {
   userController,
   statusController,
   scaleController,
+  roleController,
+  publicFacilityController,
   propertyController,
   fileController,
   depositContractController,
   depositController,
+  dashBoardController,
   categorySharedController,
   authController,
   appointmentController,

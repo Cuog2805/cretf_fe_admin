@@ -35,14 +35,15 @@ import { deleteProperty, getAllProperties } from '@/services/apis/propertyContro
 import useStatus from '@/selectors/useStatus';
 import { useCurrentUser } from '@/selectors/useCurrentUser';
 import { UNPAGED } from '@/core/constant';
-import FileRenderer from '@/utils/file/fileRender';
+import FileRenderer from '@/components/FIle/fileRender';
 import FormItem from 'antd/es/form/FormItem';
-import usePagination from '@/utils/usePagination';
+import usePagination from '@/components/EditableTable/usePagination';
 import usePropertyType from '@/selectors/usePropertyType';
 import { PageContainer } from '@ant-design/pro-components';
-import { findIdAndNodeChildrenIds, findNodeById, flatToTree } from '@/utils/treeUtil';
+import { findIdAndNodeChildrenIds, findNodeById, flatToTree } from '@/components/tree/treeUtil';
 import { set } from 'lodash';
 import useLocations from '@/selectors/useLocation';
+import CustomTreeSelect from '@/components/tree/treeSelectCustom';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -56,6 +57,8 @@ const MyPropertyList = () => {
   const { propertyTypeList } = usePropertyType();
   const { locationList, locationTree } = useLocations();
 
+  console.log('locationTree', locationTree);
+
   const [properties, setProperties] = useState<API.PropertyDTO[]>([]);
   const [total, setTotal] = useState(0);
   const [totalValue, setTotalValue] = useState(0);
@@ -67,7 +70,7 @@ const MyPropertyList = () => {
   const [deletingIds, setDeletingIds] = useState<string[]>([]);
 
   const { tableProps, paginationQuery } = usePagination({
-    sort: 'createdAt,desc',
+    sort: 'dateCreated,desc',
   });
   const { pagination } = tableProps(total);
 
@@ -91,26 +94,32 @@ const MyPropertyList = () => {
       getAllProperties(page, body).then((res) => {
         setProperties(res?.data);
         setTotal(res?.total);
-        setTotalValue(res?.data.reduce((sum, p) => {
-          if(p.priceNewestValue){
-            return sum + p.priceNewestValue
-          }
-          return sum + 0;
-        }, 0));
-        setTotalSale(res?.data.reduce((sum, p) => {
-          if(p.type === 'SOLD'){
-            return sum + 1;
-          }else{
+        setTotalValue(
+          res?.data.reduce((sum, p) => {
+            if (p.priceNewestValue) {
+              return sum + p.priceNewestValue;
+            }
             return sum + 0;
-          }
-        }, 0));
-        setTotalRent(res?.data.reduce((sum, p) => {
-          if(p.type === 'RENT'){
-            return sum + 1;
-          }else{
-            return sum + 0;
-          }
-        }, 0));
+          }, 0),
+        );
+        setTotalSale(
+          res?.data.reduce((sum, p) => {
+            if (p.type === 'SOLD') {
+              return sum + 1;
+            } else {
+              return sum + 0;
+            }
+          }, 0),
+        );
+        setTotalRent(
+          res?.data.reduce((sum, p) => {
+            if (p.type === 'RENT') {
+              return sum + 1;
+            } else {
+              return sum + 0;
+            }
+          }, 0),
+        );
       });
     });
   };
@@ -176,11 +185,7 @@ const MyPropertyList = () => {
       <Row gutter={16} style={{ marginBottom: 24 }}>
         <Col span={8}>
           <Card>
-            <Statistic
-              title="Tổng số bất động sản"
-              value={total}
-              prefix={<HomeOutlined />}
-            />
+            <Statistic title="Tổng số bất động sản" value={total} prefix={<HomeOutlined />} />
           </Card>
         </Col>
         <Col span={8}>
@@ -201,7 +206,7 @@ const MyPropertyList = () => {
           <Row gutter={16}>
             <Col span={8}>
               <FormItem name="locationIds">
-                <TreeSelect
+                <CustomTreeSelect
                   showSearch
                   dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                   treeData={locationTree}
@@ -210,9 +215,9 @@ const MyPropertyList = () => {
                   allowClear
                   treeDefaultExpandAll
                   onChange={(value) => {
-                      const node = findNodeById(locationTree, value);
-                      form.setFieldValue('locationIds', findIdAndNodeChildrenIds(node));
-                  }}  
+                    const node = findNodeById(locationTree, value);
+                    form.setFieldValue('locationIds', findIdAndNodeChildrenIds(node));
+                  }}
                 />
               </FormItem>
             </Col>
@@ -236,7 +241,7 @@ const MyPropertyList = () => {
             <Col span={4}>
               <FormItem name="statusIds">
                 <Select
-                  mode="multiple"
+                  //mode="multiple"
                   style={{ width: '100%' }}
                   placeholder="Trạng thái"
                   //   value={propertyStatus || undefined}
@@ -380,7 +385,10 @@ const MyPropertyList = () => {
                     {item.amenityDTOs?.find((item) => item.code === 'AREA')?.valueDisplay}
                   </Text>
                   <br />
-                  <Text type="secondary">{item.addressSpecific}, {locationList.find((l) => l.locationId === item.locationId)?.fullname}</Text>
+                  <Text type="secondary">
+                    {item.addressSpecific},{' '}
+                    {locationList.find((l) => l.locationId === item.locationId)?.fullname}
+                  </Text>
                   <br />
                   <br />
                   <Space size="small" wrap>

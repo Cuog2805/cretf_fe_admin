@@ -1,25 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Button,
-  Typography,
-  Row,
-  Col,
-  Space,
-  Card,
-  Flex,
-  Tag,
-  Divider,
-  Anchor,
-  Modal,
-  Tabs,
-  Form,
-  Select,
-  TimePicker,
-  DatePicker,
-} from 'antd';
+import { Button, Typography, Row, Col, Space, Card, Anchor, Modal, Tabs } from 'antd';
 import { PageContainer } from '@ant-design/pro-components';
 import { HeartOutlined, ArrowLeftOutlined } from '@ant-design/icons';
-import FileRenderer from '@/utils/file/fileRender';
+import FileRenderer from '@/components/FIle/fileRender';
 import { useNavigate, useParams } from '@umijs/max';
 import { getOneDetailProperty } from '@/services/apis/propertyController';
 import useStatus from '@/selectors/useStatus';
@@ -27,8 +10,9 @@ import Neighborhood from './component/neighborhood';
 import Extend from './component/extend';
 import Detail from './component/detail';
 import Overview from './component/overview';
-import AppointmentModal from '../../Appointment/appointment-modal';
 import { useCurrentUser } from '@/selectors/useCurrentUser';
+import MapDisplay from '@/components/Map/MapDisplay';
+import AppointmentModal from '@/pages/User/Profile/Appointment/appointment-modal';
 const { Title, Text } = Typography;
 
 const PropertyDetail = () => {
@@ -166,30 +150,34 @@ const PropertyDetail = () => {
         >
           <Card>
             <Row gutter={[8, 8]} style={{ marginBottom: 24 }}>
-              <Col span={16}>
-                <div onClick={handleImageClick} style={{ cursor: 'pointer' }}>
-                  <FileRenderer
-                    fileId={
-                      propertyDetail?.propertyFilesDTOs?.find((file) => file.category === 'COMMON')
-                        ?.fileIds?.[0] || ''
-                    }
-                    width="100%"
-                    height={400}
-                  />
-                </div>
+              <Col sm={24} md={24} lg={12}>
+                <Card title="Hình ảnh">
+                  <div onClick={handleImageClick} style={{ cursor: 'pointer' }}>
+                    <Row gutter={[8, 8]}>
+                      {propertyDetail?.propertyFilesDTOs
+                        ?.flatMap((file) => file.fileIds || [])
+                        .slice(0, 4)
+                        .map((fileId) => (
+                          <Col span={12} key={fileId}>
+                            <div onClick={handleImageClick} style={{ cursor: 'pointer' }}>
+                              <FileRenderer fileId={fileId} width="100%" height={196} />
+                            </div>
+                          </Col>
+                        ))}
+                    </Row>
+                  </div>
+                </Card>
               </Col>
-              <Col span={8}>
-                <Row gutter={[8, 8]}>
-                  {propertyDetail?.propertyFilesDTOs
-                    ?.find((file) => file.category === 'COMMON')
-                    ?.fileIds?.map((fileId) => (
-                      <Col span={12} key={fileId}>
-                        <div onClick={handleImageClick} style={{ cursor: 'pointer' }}>
-                          <FileRenderer fileId={fileId} width="100%" height={196} />
-                        </div>
-                      </Col>
-                    ))}
-                </Row>
+              <Col sm={24} md={24} lg={12}>
+                <MapDisplay
+                  markers={[
+                    {
+                      latitude: propertyDetail?.coordinatesDTO?.latitude ?? 21.0227784,
+                      longitude: propertyDetail?.coordinatesDTO?.longitude ?? 105.8163641,
+                      label: propertyDetail?.addressSpecific,
+                    },
+                  ]}
+                />
               </Col>
             </Row>
           </Card>

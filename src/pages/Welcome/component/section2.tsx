@@ -1,12 +1,15 @@
 import React from 'react';
 import { Card, Button, Typography, Row, Col, Space } from 'antd';
 import { PageContainer } from '@ant-design/pro-components';
+import { useNavigate } from '@umijs/max';
 
 const { Title, Text } = Typography;
 
 const Section2 = () => {
+  const navigate = useNavigate();
+
   return (
-    <PageContainer>
+    <PageContainer title={''}>
       <Card style={{ width: '100%' }}>
         <Row gutter={[24, 24]}>
           <Col span={8}>
@@ -21,14 +24,13 @@ const Section2 = () => {
           <Col span={16}>
             <Space direction="vertical">
               <Title level={3} style={{ fontWeight: 'bold' }}>
-                Start touring homes, no strings attached
+                Định giá nhà của bạn
               </Title>
               <Text style={{ color: '#666' }}>
-                Unlike many other agents, Redfin agents won’t ask you to sign an exclusive
-                commitment before they’ll take you on a first tour.
+                Đưa ra giá trị căn hộ hoặc nhà đang bán phù hợp với thị trường hiện nay.
               </Text>
-              <Button type="primary" size="large" style={{ marginTop: 20 }}>
-                Search for homes
+              <Button type="primary" size="large" onClick={() => {navigate('/sell/my-homes-valuation')}} style={{ marginTop: 20 }}>
+                Định giá
               </Button>
             </Space>
           </Col>

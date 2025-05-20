@@ -28,43 +28,32 @@ import {
 import { getAllProperties, getOneDetailProperty } from '@/services/apis/propertyController';
 import { UNPAGED } from '@/core/constant';
 import useStatus from '@/selectors/useStatus';
-import FileRenderer from '@/utils/file/fileRender';
-import { useLocation, useNavigate } from '@umijs/max';
+import FileRenderer from '@/components/FIle/fileRender';
+import { useLocation, useNavigate, useParams } from '@umijs/max';
 import useCategoryShareds from '@/selectors/useCategoryShareds';
 import FormItem from 'antd/es/form/FormItem';
 import { useCurrentUser } from '@/selectors/useCurrentUser';
 import usePropertyType from '@/selectors/usePropertyType';
-import usePagination from '@/utils/usePagination';
-import { findIdAndNodeChildrenIds, findNodeById } from '@/utils/treeUtil';
+import usePagination from '@/components/EditableTable/usePagination';
+import { findIdAndNodeChildrenIds, findNodeById } from '@/components/tree/treeUtil';
 import useLocations from '@/selectors/useLocation';
+import CustomTreeSelect from '@/components/tree/treeSelectCustom';
 const { Title, Paragraph, Text } = Typography;
 const { Option } = Select;
-
-const priceOptions = [
-  'No min',
-  '$50k',
-  '$100k',
-  '$150k',
-  '$200k',
-  '$300k',
-  '$400k',
-  '$500k',
-  '$750k',
-  '$1M+',
-];
 
 const BuyPage = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const location = useLocation();
   const currentUser = useCurrentUser();
+  const {locationId} = useParams();
+
   const { propertySoldStatusList, propertyStatusList } = useStatus();
   const { propertyTypeList } = usePropertyType();
   const { locationList, locationTree } = useLocations();
 
   const [properties, setProperties] = useState<API.PropertyDTO[]>([]);
   const [total, setTotal] = useState(0);
-  const [searchText, setSearchText] = useState('');
   const [propertyType, setPropertyType] = useState<string>('');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
@@ -74,8 +63,16 @@ const BuyPage = () => {
   const { pagination } = tableProps(total);
 
   useEffect(() => {
-    handleSearch();
-  }, [paginationQuery]);
+    if(locationId){
+      form.setFieldValue('locationIds', [locationId]);
+    }
+  }, [locationId])
+
+  useEffect(() => {
+    if(propertyTypeList && propertyTypeList.length > 0){
+      handleSearch();
+    }
+  }, [paginationQuery, propertyTypeList]);
 
   const getPropertyTypeFromMenu = (): API.PropertyDTO => {
     const path = location.pathname;
@@ -110,20 +107,22 @@ const BuyPage = () => {
 
   const handleSearch = () => {
     form.validateFields().then((formValue) => {
-      console.log('formValue', formValue);
+      const typeSearch = getPropertyTypeFromMenu();
       const body: API.PropertyDTO = {
         ...formValue,
-        type: getPropertyTypeFromMenu().type,
-        propertyTypeId: getPropertyTypeFromMenu().propertyTypeId,
-        priceNewestScale: location.pathname.includes('/buy') ? 'SCALE_BILLION_VND' : 'SCALE_MILLION_VND',
-        creator: currentUser?.username,
+        type: typeSearch.type,
+        propertyTypeId: typeSearch.propertyTypeId,
+        priceNewestScale: location.pathname.includes('/buy')
+        ? 'SCALE_BILLION_VND'
+        : 'SCALE_MILLION_VND',
+        //creator: currentUser?.username,
       };
+      console.log('body', body);
       const page: any = {
         page: paginationQuery.page,
         size: paginationQuery.size,
         sort: formValue.sortBy + ',' + formValue.sortDirection,
       };
-      console.log('page', page);
       getAllProperties(page, body).then((res) => {
         setProperties(res?.data);
         setTotal(res?.total);
@@ -158,7 +157,7 @@ const BuyPage = () => {
           <Row gutter={12}>
             <Col xs={24} sm={24} md={12}>
               <Title level={2} style={{ fontWeight: 700 }}>
-                Nhà đang bán gần bạn
+                {getPropertyTypeFromMenu().type === 'SOLD' ? 'Nhà đang bán gần bạn' : 'Nhà cho thuê gần bạn'}
               </Title>
               <Paragraph style={{ fontSize: 16, marginBottom: 32 }}>
                 Tìm nhà để bán gần bạn. Xem ảnh, thông tin nhà mở cửa và thông tin chi tiết về bất
@@ -186,7 +185,7 @@ const BuyPage = () => {
             <Row gutter={16}>
               <Col span={8}>
                 <FormItem name="locationIds">
-                  <TreeSelect
+                  <CustomTreeSelect
                     showSearch
                     dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                     treeData={locationTree}

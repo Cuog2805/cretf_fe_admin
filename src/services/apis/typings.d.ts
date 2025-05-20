@@ -60,6 +60,33 @@ declare namespace API {
     isDeleted?: number;
   };
 
+  type CoordinatesDTO = {
+    coordinatesId?: string;
+    propertyId?: string;
+    type?: string;
+    title?: string;
+    latitude?: number;
+    longitude?: number;
+  };
+
+  type DashBoardDTO = {
+    dashBoardId?: string;
+    type?: string;
+    priceRangeCode?: string;
+    priceRange?: string;
+    priceRangeCount?: number;
+    priceRangePie?: number;
+    name?: string;
+    depositContractDate?: string;
+    depositContractCount?: number;
+    propertyTypeName?: string;
+    propertyCount?: number;
+    priceAvarage?: number;
+    totalViews?: number;
+    totalDepositContractValue?: number;
+    totalPropertyActive?: number;
+  };
+
   type deleteAppointmentParams = {
     id: string;
   };
@@ -81,6 +108,7 @@ declare namespace API {
   };
 
   type DepositContractDTO = {
+    depositContractId?: string;
     templateId?: string;
     depositId?: string;
     propertyId?: string;
@@ -91,6 +119,7 @@ declare namespace API {
     dateCreated?: string;
     dueDate?: string;
     downloadUrl?: string;
+    statusId?: string;
     depositDTO?: DepositDTO;
   };
 
@@ -110,6 +139,15 @@ declare namespace API {
     type?: string;
   };
 
+  type getAllDepositContractParams = {
+    /** Zero-based page index (0..N) */
+    page?: number;
+    /** The size of the page to be returned */
+    size?: number;
+    /** Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+    sort?: string[];
+  };
+
   type getAllDepositsParams = {
     /** Zero-based page index (0..N) */
     page?: number;
@@ -120,6 +158,24 @@ declare namespace API {
   };
 
   type getAllPropertiesParams = {
+    /** Zero-based page index (0..N) */
+    page?: number;
+    /** The size of the page to be returned */
+    size?: number;
+    /** Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+    sort?: string[];
+  };
+
+  type getAllPublicFacilityParams = {
+    /** Zero-based page index (0..N) */
+    page?: number;
+    /** The size of the page to be returned */
+    size?: number;
+    /** Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+    sort?: string[];
+  };
+
+  type getAllRolesParams = {
     /** Zero-based page index (0..N) */
     page?: number;
     /** The size of the page to be returned */
@@ -191,26 +247,34 @@ declare namespace API {
     isDeleted?: number;
   };
 
+  type lockRoleParams = {
+    id: string;
+  };
+
+  type lockUserParams = {
+    userId: string;
+  };
+
   type PageableObject = {
     offset?: number;
     sort?: SortObject;
-    pageSize?: number;
-    pageNumber?: number;
-    paged?: boolean;
     unpaged?: boolean;
+    pageNumber?: number;
+    pageSize?: number;
+    paged?: boolean;
   };
 
   type PageStatusDTO = {
-    totalPages?: number;
     totalElements?: number;
+    totalPages?: number;
     size?: number;
     content?: StatusDTO[];
     number?: number;
     sort?: SortObject;
     first?: boolean;
     last?: boolean;
-    numberOfElements?: number;
     pageable?: PageableObject;
+    numberOfElements?: number;
     empty?: boolean;
   };
 
@@ -233,9 +297,13 @@ declare namespace API {
     priceNewest?: string;
     priceNewestValue?: number;
     priceNewestScale?: string;
+    priceFrom?: number;
+    priceTo?: number;
     propertyPriceNewest?: PropertyPriceHistoryDTO;
     propertyPriceHistoryDTOs?: PropertyPriceHistoryDTO[];
     depositDTO?: DepositDTO;
+    coordinatesDTO?: CoordinatesDTO;
+    publicFacilityDTOs?: PublicFacilityDTO[];
     type?: string;
     creator?: string;
     dateCreated?: string;
@@ -269,6 +337,20 @@ declare namespace API {
     code?: string;
     name?: string;
     description?: string;
+    creator?: string;
+    dateCreated?: string;
+    modifier?: string;
+    dateModified?: string;
+    isDeleted?: number;
+  };
+
+  type PublicFacilityDTO = {
+    publicFacilityId?: string;
+    locationId?: string;
+    locationIds?: string[];
+    name?: string;
+    coordinatesDTO?: CoordinatesDTO;
+    distance?: number;
     creator?: string;
     dateCreated?: string;
     modifier?: string;
@@ -316,6 +398,14 @@ declare namespace API {
     throwException?: boolean;
   };
 
+  type ResponseListDashBoardDTO = {
+    success: boolean;
+    message?: string;
+    data: DashBoardDTO[];
+    total: number;
+    throwException?: boolean;
+  };
+
   type ResponseListDepositContractDTO = {
     success: boolean;
     message?: string;
@@ -356,6 +446,22 @@ declare namespace API {
     throwException?: boolean;
   };
 
+  type ResponseListPublicFacilityDTO = {
+    success: boolean;
+    message?: string;
+    data: PublicFacilityDTO[];
+    total: number;
+    throwException?: boolean;
+  };
+
+  type ResponseListRoleDTO = {
+    success: boolean;
+    message?: string;
+    data: RoleDTO[];
+    total: number;
+    throwException?: boolean;
+  };
+
   type ResponseListScaleDTO = {
     success: boolean;
     message?: string;
@@ -376,6 +482,22 @@ declare namespace API {
     success: boolean;
     message?: string;
     data: PropertyDTO;
+    total: number;
+    throwException?: boolean;
+  };
+
+  type ResponsePublicFacilityDTO = {
+    success: boolean;
+    message?: string;
+    data: PublicFacilityDTO;
+    total: number;
+    throwException?: boolean;
+  };
+
+  type ResponseRoleDTO = {
+    success: boolean;
+    message?: string;
+    data: RoleDTO;
     total: number;
     throwException?: boolean;
   };
@@ -404,6 +526,17 @@ declare namespace API {
     throwException?: boolean;
   };
 
+  type RoleDTO = {
+    roleId?: string;
+    name?: string;
+    description?: string;
+    creator?: string;
+    dateCreated?: string;
+    modifier?: string;
+    dateModified?: string;
+    isDeleted?: number;
+  };
+
   type ScaleDTO = {
     scaleId?: string;
     code?: string;
@@ -423,8 +556,8 @@ declare namespace API {
 
   type SortObject = {
     empty?: boolean;
-    sorted?: boolean;
     unsorted?: boolean;
+    sorted?: boolean;
   };
 
   type StatusDTO = {
@@ -438,6 +571,14 @@ declare namespace API {
     modifier?: string;
     dateModified?: string;
     isDeleted?: number;
+  };
+
+  type unlockRoleParams = {
+    id: string;
+  };
+
+  type unlockUserParams = {
+    userId: string;
   };
 
   type UserDetailDTO = {

@@ -1,6 +1,6 @@
 import { Card, Col, Row, Typography } from 'antd';
 import { useCurrentUser } from '@/selectors/useCurrentUser';
-import FileRenderer from '@/utils/file/fileRender';
+import FileRenderer from '@/components/FIle/fileRender';
 import useCategoryShareds from '@/selectors/useCategoryShareds';
 
 const { Text } = Typography;
