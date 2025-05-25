@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Typography, Row, Col, Space, Card, Anchor, Modal, Tabs } from 'antd';
+import { Button, Typography, Row, Col, Space, Card, Anchor, Modal, Tabs, message } from 'antd';
 import { PageContainer } from '@ant-design/pro-components';
-import { HeartOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import { HeartOutlined, ArrowLeftOutlined, HeartFilled } from '@ant-design/icons';
 import FileRenderer from '@/components/FIle/fileRender';
 import { useNavigate, useParams } from '@umijs/max';
-import { getOneDetailProperty } from '@/services/apis/propertyController';
+import { addToFavourite, getOneDetailProperty, removeToFavourite } from '@/services/apis/propertyController';
 import useStatus from '@/selectors/useStatus';
 import Neighborhood from './component/neighborhood';
 import Extend from './component/extend';
@@ -13,6 +13,9 @@ import Overview from './component/overview';
 import { useCurrentUser } from '@/selectors/useCurrentUser';
 import MapDisplay from '@/components/Map/MapDisplay';
 import AppointmentModal from '@/pages/User/Profile/Appointment/appointment-modal';
+import Comment from './component/commnet';
+import PropertyComment from './component/commnet';
+import ApprovalHistory from './component/approve-history';
 const { Title, Text } = Typography;
 
 const PropertyDetail = () => {
@@ -114,16 +117,22 @@ const PropertyDetail = () => {
                     href: '#property-details',
                     title: 'Chi tiết',
                   },
+                  {
+                    key: 'property-comment',
+                    href: '#property-comment',
+                    title: 'Nhận xét',
+                  },
+                  {
+                    key: 'approve-history',
+                    href: '#approve-history',
+                    title: 'Lịch sử duyệt',
+                  },
                 ]}
                 style={{
                   padding: '12px 16px',
                 }}
               />
             </div>
-
-            <Space style={{ marginLeft: '24px' }}>
-              <Button icon={<HeartOutlined />}>Yêu thích</Button>
-            </Space>
           </div>
         </div>
       </div>
@@ -213,7 +222,7 @@ const PropertyDetail = () => {
 
           {/* Property Info */}
           <Row gutter={24}>
-            <Col sm={24} md={16} lg={16}>
+            <Col sm={24} md={24} lg={24}>
               <div id="overview">
                 <Overview propertyDetail={propertyDetail} />
               </div>
@@ -229,8 +238,16 @@ const PropertyDetail = () => {
               <div id="property-details">
                 <Detail propertyDetail={propertyDetail} />
               </div>
+
+              <div id="property-comment">
+                <PropertyComment propertyDetail={propertyDetail} />
+              </div>
+
+              <div id="approve-history">
+                <ApprovalHistory propertyDetail={propertyDetail} />
+              </div>
             </Col>
-            <Col sm={24} md={8} lg={8}>
+            {/* <Col sm={24} md={8} lg={8}>
               <div
                 style={{
                   position: 'sticky',
@@ -268,7 +285,7 @@ const PropertyDetail = () => {
                   </Space>
                 </Card>
               </div>
-            </Col>
+            </Col> */}
           </Row>
 
           {/* Modal Appointment */}

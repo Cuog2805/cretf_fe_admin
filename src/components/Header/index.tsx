@@ -24,7 +24,7 @@ const { SubMenu } = Menu;
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const { dmMainMenu } = useCategoryShareds();
+  const { dmAdminMenu } = useCategoryShareds();
   const { locationTree } = useLocations();
   const [form] = Form.useForm();
 
@@ -39,18 +39,18 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
-    if (dmMainMenu && dmMainMenu.length > 0) {
-      const categorySharedsTree = flatToTree(dmMainMenu, 'code', 'codeParent', null);
+    if (dmAdminMenu && dmAdminMenu.length > 0) {
+      const categorySharedsTree = flatToTree(dmAdminMenu, 'code', 'codeParent', null);
       setMenuItems(categorySharedsTree);
     }
-  }, [dmMainMenu]);
+  }, [dmAdminMenu]);
 
   const handleSubmit = () => {
     form.validateFields().then((values) => {
       navigate(`/buy/houses-for-sale/${values.locationId ?? ''}`);
-    })
+    });
   };
-  
+
   const handleClick = ({ key }: any) => {
     // Tìm item theo key
     const selected = findItemByKey(menuItems, key);
@@ -76,49 +76,24 @@ const Navbar = () => {
   return (
     <Row gutter={24} align="middle" style={{ padding: '10px' }}>
       {/* Logo và Search Bar */}
-      <Col span={isMobile ? 20 : 8}>
-        <Row gutter={12} style={{ paddingLeft: '10px', paddingRight: '10px' }}>
-          <Col span={isMobile ? 4 : 8} style={{ alignContent: 'center' }}>
-            <Title
-              level={3}
-              style={{ color: 'red', textAlign: 'center', margin: 0, whiteSpace: 'nowrap', cursor: 'pointer' }}
-              onClick={() => navigate('/')}
-            >
-              {isMobile ? 'C' : 'CRANE'}
-            </Title>
-          </Col>
-          <Col span={isMobile ? 20 : 16}>
-            <Form form={form} layout="horizontal" style={{marginTop: '20px'}}>
-              <Row gutter={12} align="middle">
-                <Col span={16}>
-                  <Form.Item>
-                    <CustomTreeSelect
-                      style={{ width: '100%' }}
-                      dropdownStyle={{ maxHeight: 400, overflow: 'auto', borderRadius: '4px' }}
-                      treeData={locationTree}
-                      fieldNames={{ label: 'name', value: 'locationId', children: 'children' }}
-                      placeholder="Nhập địa điểm"
-                      allowClear
-                      treeDefaultExpandAll
-                      suffixIcon={<EnvironmentOutlined />}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item>
-                    <Button color="danger" variant="filled" onClick={handleSubmit} style={{ width: '100%' }}>
-                      <SearchOutlined />
-                    </Button>
-                  </Form.Item>
-                </Col>
-              </Row>
-            </Form>
-          </Col>
-        </Row>
+      <Col span={isMobile ? 4 : 4} style={{ alignContent: 'center' }}>
+        <Title
+          level={3}
+          style={{
+            color: 'red',
+            textAlign: 'center',
+            margin: 0,
+            whiteSpace: 'nowrap',
+            cursor: 'pointer',
+          }}
+          onClick={() => navigate('/admin')}
+        >
+          {isMobile ? 'C' : 'CRANE'}
+        </Title>
       </Col>
 
       {/* Menu chính */}
-      <Col span={isMobile ? 4 : 16}>
+      <Col span={isMobile ? 16 : 20}>
         {isMobile ? (
           <Dropdown
             menu={{

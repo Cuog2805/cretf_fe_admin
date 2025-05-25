@@ -11,6 +11,8 @@ const useCategoryShareds = () => {
 
     const retVal = useMemo(() => ({
         dmMainMenu: categoryShareds.filter(item => item.categoryType === 'MAIN_MENU'),
+        dmAdminMenu: categoryShareds.filter(item => item.categoryType === 'ADMIN_MENU'),
+        dmDirection: categoryShareds.filter(item => item.categoryType === 'DIRECTION'),
         dmAmenityType: categoryShareds.filter(item => item.categoryType === 'AMENITY_TYPE'),
         dmGender: categoryShareds.filter(item => item.categoryType === 'GENDER'),
     }), [categoryShareds])

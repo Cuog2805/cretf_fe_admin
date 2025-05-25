@@ -23,13 +23,6 @@ interface CustomTreeSelectProps extends TreeSelectProps {
 
 /**
  * CustomTreeSelect - Component TreeSelect tùy chỉnh hỗ trợ tìm kiếm tiếng Việt
- * 
- * @param treeData - Mảng dữ liệu cây
- * @param fieldNames - Cấu hình tên trường (mặc định: { label: 'name', value: 'id', children: 'children' })
- * @param placeholder - Placeholder cho input
- * @param allowClear - Cho phép xóa giá trị đã chọn
- * @param treeDefaultExpandAll - Mở rộng tất cả các node ban đầu
- * @param ...props - Các props khác của TreeSelect
  */
 const CustomTreeSelect: React.FC<CustomTreeSelectProps> = ({
   treeData = [],
@@ -37,10 +30,12 @@ const CustomTreeSelect: React.FC<CustomTreeSelectProps> = ({
   placeholder = 'Vui lòng chọn',
   allowClear = true,
   treeDefaultExpandAll = false,
+  onChange,
   ...props
 }) => {
   // State để lưu dữ liệu đã lọc
   const [filteredData, setFilteredData] = useState<TreeNode[]>(treeData);
+  const [searchValue, setSearchValue] = useState<string>('');
   
   // Cập nhật filteredData khi treeData thay đổi
   useEffect(() => {
@@ -75,9 +70,11 @@ const CustomTreeSelect: React.FC<CustomTreeSelectProps> = ({
   };
 
   /**
-   * Hàm xử lý tìm kiếm - sửa đổi để lọc chính xác hơn
+   * Hàm xử lý tìm kiếm
    */
   const handleSearch = (searchText: string): void => {
+    setSearchValue(searchText);
+    
     if (!searchText.trim()) {
       setFilteredData(treeData);
       return;
@@ -116,6 +113,18 @@ const CustomTreeSelect: React.FC<CustomTreeSelectProps> = ({
     setFilteredData(filtered);
   };
 
+  // Custom onChange để đảm bảo luôn truyền đúng value
+  const handleChange = (value: any, label: any, extra: any) => {
+    // Clear search sau khi select để về trạng thái ban đầu
+    setSearchValue('');
+    setFilteredData(treeData);
+    
+    // Gọi onChange từ props
+    if (onChange) {
+      onChange(value, label, extra);
+    }
+  };
+
   return (
     <TreeSelect
       treeData={filteredData}
@@ -123,10 +132,15 @@ const CustomTreeSelect: React.FC<CustomTreeSelectProps> = ({
       placeholder={placeholder}
       allowClear={allowClear}
       treeDefaultExpandAll={treeDefaultExpandAll}
-      dropdownStyle={{ maxHeight: 400, overflow: 'auto', ...props.dropdownStyle }}
       showSearch
+      searchValue={searchValue}
       onSearch={handleSearch}
+      onChange={handleChange}
       filterTreeNode={false} // Tắt cơ chế lọc mặc định
+      treeTitleRender={(nodeData) => {
+        // Đảm bảo hiển thị đúng label ngay cả sau khi filter
+        return nodeData[fieldNames.label] || nodeData.title;
+      }}
       {...props}
     />
   );

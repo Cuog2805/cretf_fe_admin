@@ -10,7 +10,7 @@ const useStatus = (body: API.StatusDTO = {}) => {
     }, [])
 
     const retVal = useMemo(() => ({
-        propertyStatusList: statusList,
+        propertyStatusList: statusList.filter(item => item.type === 'PROPERTY_SOLD_STATUS' || item.type === 'PROPERTY_RENT_STATUS'),
         propertySoldStatusList: statusList.filter(item => item.type === 'PROPERTY_SOLD_STATUS'),
         propertyRentStatusList: statusList.filter(item => item.type === 'PROPERTY_RENT_STATUS'),
         userStatusList: statusList.filter(item => item.type === 'USER_STATUS'),

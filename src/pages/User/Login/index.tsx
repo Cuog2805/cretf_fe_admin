@@ -1,4 +1,4 @@
-import { login } from '@/services/apis/authController';
+import { adminLogin, login } from '@/services/apis/authController';
 import { setToken } from '@/selectors/authService';
 import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
 import { PageContainer, ProForm, ProFormText } from '@ant-design/pro-components';
@@ -12,7 +12,7 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (values: API.UsersDTO) => {
     try {
-      const response = await login(values);
+      const response = await adminLogin(values);
 
       if (response?.data?.token) {
         message.success('Đăng nhập thành công!');
@@ -25,7 +25,7 @@ const Login: React.FC = () => {
             currentUser: userInfo,
           }));
           await new Promise((resolve) => setTimeout(resolve, 100));
-          history.push('/welcome');
+          history.push('/admin/dashboard');
           return;
         } else {
           message.error('Không thể lấy thông tin người dùng');
@@ -44,10 +44,10 @@ const Login: React.FC = () => {
 
   return (
     <PageContainer title="Crane" style={{ alignItems: 'center' }}>
-      <Card style={{ maxWidth: '1000px', margin: 'auto', padding: '40px 0' }}>
+      <Card style={{ maxWidth: '500px', margin: 'auto', padding: '40px 0' }}>
         <Row gutter={32}>
           {/* Form Đăng Nhập */}
-          <Col xs={24} md={12}>
+          <Col xs={24} md={24}>
             <h1 style={{ fontSize: '28px', fontWeight: 'bold' }}>ĐĂNG NHẬP</h1>
             <p>Đăng nhập bằng địa chỉ email và mật khẩu của bạn.</p>
 
@@ -89,19 +89,6 @@ const Login: React.FC = () => {
                 rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}
               />
             </ProForm>
-          </Col>
-
-          <Col span={1}>
-            <Divider type="vertical" style={{ height: '100%' }} />
-          </Col>
-
-          {/* Tạo tài khoản */}
-          <Col xs={23} md={11}>
-            <h1 style={{ fontSize: '28px', fontWeight: 'bold' }}>TẠO MỘT TÀI KHOẢN</h1>
-            <Button type="primary" ghost size="large" onClick={() => history.push('/auth/register')}>
-              TẠO TÀI KHOẢN
-            </Button>
-            <p>Hãy tạo tài khoản ngay!</p>
           </Col>
         </Row>
       </Card>

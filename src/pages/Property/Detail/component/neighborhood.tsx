@@ -17,6 +17,11 @@ const Neighborhood = ({ propertyDetail }: { propertyDetail: API.PropertyDTO | nu
         <Space direction="vertical" size="large" style={{ width: '100%' }}>
           <MapDisplay
             markers={[
+              {
+                latitude: propertyDetail?.coordinatesDTO?.latitude ?? 21.0278,
+                longitude: propertyDetail?.coordinatesDTO?.longitude ?? 105.8342,
+                label: propertyDetail?.addressSpecific ?? '',
+              },
               ...(propertyDetail?.publicFacilityDTOs?.map((facility) => {
                 return {
                   latitude: facility?.coordinatesDTO?.latitude ?? 21.0278,

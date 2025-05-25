@@ -162,8 +162,8 @@ const MyPropertyForm = () => {
     ) {
       const defaultStatus =
         propertyPurpose === 'SOLD'
-          ? propertySoldStatusList.find((d) => d.code === 'FORSOLD')?.statusId
-          : propertyRentStatusList.find((d) => d.code === 'FORRENT')?.statusId;
+          ? propertySoldStatusList.find((d) => d.code === 'WAITING')?.statusId
+          : propertyRentStatusList.find((d) => d.code === 'WAITING')?.statusId;
       const defaultScale =
         propertyPurpose === 'SOLD'
           ? moneyScaleList.find((d) => d.scaleId === 'SCALE_BILLION_VND')?.scaleId
@@ -191,8 +191,8 @@ const MyPropertyForm = () => {
     if (formInitialized && !isUpdateMode) {
       const defaultStatus =
         propertyPurpose === 'SOLD'
-          ? propertySoldStatusList.find((d) => d.code === 'FORSOLD')?.statusId
-          : propertyRentStatusList.find((d) => d.code === 'FORRENT')?.statusId;
+          ? propertySoldStatusList.find((d) => d.code === 'WAITING')?.statusId
+          : propertyRentStatusList.find((d) => d.code === 'WAITING')?.statusId;
       const defaultScale =
         propertyPurpose === 'SOLD'
           ? moneyScaleList.find((d) => d.scaleId === 'SCALE_BILLION_VND')?.scaleId
@@ -387,7 +387,7 @@ const MyPropertyForm = () => {
                     fieldNames={{ label: 'name', value: 'locationId', children: 'children' }}
                     placeholder="Chọn khu vực"
                     allowClear
-                    treeDefaultExpandAll
+                    treeDefaultExpandAll={false}
                     // onChange={(value) => {
                     //   const node = findNodeById(locationTree, value);
                     //   form.setFieldValue('locationIds', findIdAndNodeChildrenIds(node));

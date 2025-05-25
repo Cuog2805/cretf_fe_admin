@@ -13,7 +13,7 @@ import { getToken } from './selectors/authService';
 import AvatarDropdown from '@/components/RightContent/AvatarDropdown';
 
 const isDev = process.env.NODE_ENV === 'development';
-const loginPath = '/auth/login';
+const loginPath = '/admin/auth/login';
 
 /**
  * @see  https://umijs.org/zh-CN/plugins/plugin-initial-state
@@ -36,7 +36,7 @@ export async function getInitialState(): Promise<{
   };
 
   // Nếu đang ở trang đăng nhập: không cần lấy thông tin người dùng
-  if (window.location.pathname === '/auth/login') {
+  if (window.location.pathname === '/admin/auth/login') {
     return {
       fetchUserInfo,
       currentUser: undefined,
@@ -74,6 +74,8 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     rightContentRender: () => <AvatarDropdown></AvatarDropdown>,
     footerRender: () => <Footer />,
     siderRender: false,
+    menuRender: false, // Thêm dòng này
+    menuHeaderRender: false, // Và dòng này
     collapsed: false,
     collapsedButtonRender: false,
     headerHeight: 60,
@@ -83,7 +85,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
       if (!initialState?.currentUser && location.pathname !== loginPath) {
         history.push(loginPath);
       } else if (initialState?.currentUser && location.pathname === loginPath) {
-        history.push('/welcome');
+        history.push('/admin/auth/dashboard');
       }
     },
     ...initialState?.settings

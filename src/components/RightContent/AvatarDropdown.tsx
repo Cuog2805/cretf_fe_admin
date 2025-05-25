@@ -26,7 +26,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
         });
         await logout();
         clearToken();
-        history.push('/auth/login');
+        history.push('/admin/auth/login');
         return;
       }
       history.push(`/account/${key}`);

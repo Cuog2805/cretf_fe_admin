@@ -1,4 +1,6 @@
-﻿/**
+﻿import access from "@/access";
+
+/**
  * @name umi 的路由配置
  * @description 只支持 path,component,routes,redirect,wrappers,name,icon 的配置
  * @param path  path 只支持两种占位符配置，第一种是动态参数 :id 的形式，第二种是 * 通配符，通配符只能出现路由字符串的最后。
@@ -12,167 +14,68 @@
  */
 export default [
   {
-    path: '/auth',
+    path: '/admin/auth',
     layout: false,
     routes: [
         {
           name: 'login',
-          path: '/auth/login',
+          path: '/admin/auth/login',
           component: './User/Login',
-        },
-        {
-          name: 'register',
-          path: '/auth/register',
-          component: './User/Register',
         },
     ],
   },
   {
-    path: '/',
+    path: '/admin',
     layout: true,
     //component: './layouts',
     routes: [
       {
-        path: '/',
-        redirect: '/welcome',
+        path: '/admin',
+        redirect: '/admin/dashboard',
       },
       {
-        name: 'welcome',
-        path: '/welcome',
-        component: './Welcome',
+        name: 'Biểu đồ',
+        access: 'canAdmin',
+        path: '/admin/dashboard',
+        component: './Dashboard',
       },
       {
-        path: '/buy',
-        redirect: '/buy/houses-for-sale',
+        path: '/admin/manager-property',
+        redirect: '/admin/manager-property/list',
       },
       {
-        name: 'Mua nhà',
-        path: '/buy/houses-for-sale',
-        component: './BuyPage',
+        name: 'Danh sách bất động sản',
+        access: 'canAdmin',
+        path: '/admin/manager-property/list',
+        component: './Property',
       },
       {
-        name: 'Mua nhà',
-        path: '/buy/houses-for-sale/:locationId',
-        component: './BuyPage',
-      },
-      {
-        name: 'Xem chi tiết',
-        path: '/buy/houses-for-sale/detail/:propertyId',
-        component: './BuyPage/Detail',
-      },
-      {
-        name: 'Mua căn hộ',
-        path: '/buy/condos-for-sale',
-        component: './BuyPage',
-      },
-      {
-        name: 'Mua đất nền',
-        path: '/buy/land-for-sale',
-        component: './BuyPage',
-      },
-      {
-        path: '/rent',
-        redirect: '/rent/houses-for-rent',
-      },
-      {
-        name: 'Thuê nhà',
-        path: '/rent/houses-for-rent',
-        component: './BuyPage',
-      },
-      {
-        name: 'Thuê nhà',
-        path: '/rent/houses-for-rent/:locationId',
-        component: './BuyPage',
-      },
-      {
-        name: 'Thuê căn hộ',
-        path: '/rent/condos-for-rent',
-        component: './BuyPage',
-      },
-      {
-        path: '/sell',
-        redirect: '/sell/my-homes-valuation',
-      },
-      {
-        name: 'Định giá bất động sản',
-        path: '/sell/my-homes-valuation',
-        component: './PredictPrice',
-      },
-      {
-        name: 'Đặt cọc',
-        path: '/deposit/:propertyId',
-        component: './Deposit',
-      },
-      {
-        name: 'Hồ sơ',
-        path: '/account/profile/detail',
-        component: './User/Profile/Detail',
-      },
-      {
-        name: 'Chỉnh sửa hồ sơ',
-        path: '/account/profile/edit',
-        component: './User/Profile/Edit',
-      },
-      {
-        name: 'Đổi mật khẩu',
-        path: '/account/profile/password',
-        component: './User/Profile/Password',
-      },
-      {
-        name: 'Cuộc hẹn',
-        path: '/account/profile/appointment',
-        component: './User/Profile/Appointment',
-      },
-      {
-        name: 'Bất động sản của tôi',
-        path: '/account/my-property',
-        component: './MyProperty',
+        name: 'Chi tiết bất động sản',
+        access: 'canAdmin',
+        path: '/admin/manager-property/detail/:propertyId',
+        component: './Property/Detail',
       },
       {
         name: 'Thêm mới bất động sản',
-        path: '/account/my-property/create',
-        component: './MyProperty/Create',
+        access: 'canAdmin',
+        path: '/admin/manager-property/create',
+        component: './Property/Create',
       },
       {
-        name: 'Chỉnh sửa bất động sản',
-        path: '/account/my-property/edit/:propertyId',
-        component: './MyProperty/Create',
+        name: 'Phê duyệt bất động sản mới',
+        access: 'canAdmin',
+        path: '/admin/manager-property/property-approve',
+        component: './Property/Approve',
       },
       {
-        name: 'Cọc',
-        path: '/account/profile/deposit',
-        component: './User/Profile/Deposit',
+        name: 'Phê duyệt bất động sản mới',
+        access: 'canAdmin',
+        path: '/admin/manager-property/public-facility',
+        component: './PublicFacility',
       },
     ],
   },
 
-  // {
-  //   path: '/admin',
-  //   name: 'admin',
-  //   icon: 'crown',
-  //   access: 'canAdmin',
-  //   routes: [
-  //     {
-  //       path: '/admin',
-  //       redirect: '/admin/sub-page',
-  //     },
-  //     {
-  //       path: '/admin/sub-page',
-  //       name: 'sub-page',
-  //       component: './Admin',
-  //     },
-  //   ],
-  // },
-  // {
-  //   name: 'list.table-list',
-  //   icon: 'table',
-  //   path: '/list',
-  //   component: './TableList',
-  // },
-  // {
-  //   path: '/',
-  //   redirect: '/welcome',
-  // },
   {
     path: '*',
     layout: false,

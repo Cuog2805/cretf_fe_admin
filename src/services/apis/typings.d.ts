@@ -14,6 +14,7 @@ declare namespace API {
     scaleUnit?: string;
     valueDisplay?: string;
     level?: string;
+    ordinal?: number;
     creator?: string;
     dateCreated?: string;
     modifier?: string;
@@ -40,6 +41,15 @@ declare namespace API {
     modifier?: string;
     dateModified?: string;
     isDeleted?: number;
+  };
+
+  type ApprovalHistoryDTO = {
+    approvalId?: string;
+    propertyId?: string;
+    statusId?: string;
+    note?: string;
+    approvalDate?: string;
+    approver?: string;
   };
 
   type CategorySharedDTO = {
@@ -97,6 +107,10 @@ declare namespace API {
 
   type deleteFileParams = {
     fileId: string;
+  };
+
+  type deletePropertyCommentParams = {
+    id: string;
   };
 
   type deletePropertyParams = {
@@ -219,6 +233,15 @@ declare namespace API {
     id: string;
   };
 
+  type getFavouritePropertiesParams = {
+    /** Zero-based page index (0..N) */
+    page?: number;
+    /** The size of the page to be returned */
+    size?: number;
+    /** Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+    sort?: string[];
+  };
+
   type getFileInfoParams = {
     fileId: string;
   };
@@ -258,10 +281,10 @@ declare namespace API {
   type PageableObject = {
     offset?: number;
     sort?: SortObject;
-    unpaged?: boolean;
+    paged?: boolean;
     pageNumber?: number;
     pageSize?: number;
-    paged?: boolean;
+    unpaged?: boolean;
   };
 
   type PageStatusDTO = {
@@ -271,11 +294,26 @@ declare namespace API {
     content?: StatusDTO[];
     number?: number;
     sort?: SortObject;
+    numberOfElements?: number;
+    pageable?: PageableObject;
     first?: boolean;
     last?: boolean;
-    pageable?: PageableObject;
-    numberOfElements?: number;
     empty?: boolean;
+  };
+
+  type PropertyCommentDTO = {
+    propertyCommentId?: string;
+    propertyId?: string;
+    parentCode?: string;
+    code?: string;
+    path?: string;
+    level?: number;
+    content?: string;
+    creator?: string;
+    dateCreated?: string;
+    modifier?: string;
+    dateModified?: string;
+    isDeleted?: number;
   };
 
   type PropertyDTO = {
@@ -301,10 +339,16 @@ declare namespace API {
     priceTo?: number;
     propertyPriceNewest?: PropertyPriceHistoryDTO;
     propertyPriceHistoryDTOs?: PropertyPriceHistoryDTO[];
+    approvalHistoryDTO?: ApprovalHistoryDTO;
+    approvalHistoryDTOs?: ApprovalHistoryDTO[];
     depositDTO?: DepositDTO;
     coordinatesDTO?: CoordinatesDTO;
     publicFacilityDTOs?: PublicFacilityDTO[];
     type?: string;
+    views?: number;
+    usernameFav?: string;
+    isInFavourite?: number;
+    propertyCommentDTOs?: PropertyCommentDTO[];
     creator?: string;
     dateCreated?: string;
     modifier?: string;
@@ -478,6 +522,14 @@ declare namespace API {
     throwException?: boolean;
   };
 
+  type ResponsePropertyCommentDTO = {
+    success: boolean;
+    message?: string;
+    data: PropertyCommentDTO;
+    total: number;
+    throwException?: boolean;
+  };
+
   type ResponsePropertyDTO = {
     success: boolean;
     message?: string;
@@ -556,8 +608,8 @@ declare namespace API {
 
   type SortObject = {
     empty?: boolean;
-    unsorted?: boolean;
     sorted?: boolean;
+    unsorted?: boolean;
   };
 
   type StatusDTO = {
