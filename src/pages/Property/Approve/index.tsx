@@ -38,13 +38,7 @@ import {
   CloseCircleOutlined,
 } from '@ant-design/icons';
 import {
-  addToFavourite,
-  approveProperty,
   getAllProperties,
-  getOneDetailProperty,
-  lockProperty,
-  removeToFavourite,
-  unLockProperty,
 } from '@/services/apis/propertyController';
 import { UNPAGED } from '@/core/constant';
 import useStatus from '@/selectors/useStatus';
@@ -77,6 +71,7 @@ const PropertyApprove = () => {
   const [properties, setProperties] = useState<API.PropertyDTO[]>([]);
   const [total, setTotal] = useState(0);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [loading, setLoading] = useState(false); // loading state
   
   const [modalVisible, setModalVisible] = useState(false);
   const [modalIsApprove, setModalIsApprove] = useState(true);
@@ -107,6 +102,7 @@ const PropertyApprove = () => {
   }, [paginationQuery, propertyTypeList, propertySoldStatusList]);
 
   const handleSearch = () => {
+    setLoading(true);
     form.validateFields().then((formValue) => {
       const body: API.PropertyDTO = {
         ...formValue,
@@ -127,6 +123,7 @@ const PropertyApprove = () => {
         setTotal(res?.total);
       });
     });
+    setLoading(false);
   };
 
   const toggleSortDirection = () => {
@@ -440,11 +437,11 @@ const PropertyApprove = () => {
             size="middle"
             showSorterTooltip={false}
             scroll={{ x: 800 }}
+            loading={loading}
           />
         </Card>
       </Flex>
 
-      {/* Modal tự xử lý mọi thứ */}
       <PropertyApprovalModal
         visible={modalVisible}
         isApprove={modalIsApprove}

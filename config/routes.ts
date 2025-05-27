@@ -73,6 +73,18 @@ export default [
         path: '/admin/manager-property/public-facility',
         component: './PublicFacility',
       },
+      {
+        name: 'Quản lý người dùng',
+        access: 'canAdmin',
+        path: '/admin/manager-user/list',
+        component: './User/Manage',
+      },
+      {
+        name: 'Quản lý vai trò',
+        access: 'canAdmin',
+        path: '/admin/manager-user/role',
+        component: './Role',
+      },
     ],
   },
 

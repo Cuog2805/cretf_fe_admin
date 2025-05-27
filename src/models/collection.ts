@@ -3,6 +3,7 @@ import { getAllAmenities } from "@/services/apis/amenityController";
 import { getAllCategoryShared } from "@/services/apis/categorySharedController";
 import { getAllLocation } from "@/services/apis/locationController";
 import { getAllPropertyType } from "@/services/apis/propertyTypeController";
+import { getAllRoles } from "@/services/apis/roleController";
 import { getAllScale } from "@/services/apis/scaleController";
 import { getAllStatus } from "@/services/apis/statusController";
 import { useCallback, useRef, useState } from "react"
@@ -40,6 +41,18 @@ export default () => {
             isLoadedtScaleList.current = true;
             getAllScale(UNPAGED, body ?? {}).then(resp => {
                 setScaleList(resp.data ?? []);
+            })
+        }
+    }, [])
+
+    //Danh mục Roles
+    const [roleList, setRoleList] = useState<API.RoleDTO[]>([]);
+    const isLoadedRoleList = useRef<boolean>(false);
+    const loadRoleList = useCallback((body?: API.RoleDTO) => {
+        if(!isLoadedRoleList.current) {
+            isLoadedRoleList.current = true;
+            getAllRoles(UNPAGED, body ?? {}).then(resp => {
+                setRoleList(resp.data ?? []);
             })
         }
     }, [])
@@ -83,6 +96,7 @@ export default () => {
     return {
         categoryShareds, loadCategoryShareds,
         statusList, loadStatusList,
+        roleList, loadRoleList,
         scaleList, loadtScaleList,
         amenityList, loadtAmenityList,
         propertyTypeList, loadPropertyTypeList,

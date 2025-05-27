@@ -72,6 +72,7 @@ const PropertyManagement = () => {
   const [properties, setProperties] = useState<API.PropertyDTO[]>([]);
   const [total, setTotal] = useState(0);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [loading, setLoading] = useState(false); // loading state
 
   const { tableProps, paginationQuery } = usePagination({
     sort: 'createdAt,desc',
@@ -98,8 +99,9 @@ const PropertyManagement = () => {
   }, [paginationQuery, propertyTypeList, propertySoldStatusList]);
 
   const handleSearch = () => {
+    setLoading(true); // Bắt đầu loading
+    
     form.validateFields().then((formValue) => {
-      //const typeSearch = getPropertyTypeFromMenu();
       const body: API.PropertyDTO = {
         ...formValue,
         type: formValue.type,
@@ -114,10 +116,20 @@ const PropertyManagement = () => {
         size: paginationQuery.size,
         sort: formValue.sortBy + ',' + formValue.sortDirection,
       };
-      getAllProperties(page, body).then((res) => {
-        setProperties(res?.data);
-        setTotal(res?.total);
-      });
+      getAllProperties(page, body)
+        .then((res) => {
+          setProperties(res?.data);
+          setTotal(res?.total);
+        })
+        .catch((error) => {
+          message.error('Có lỗi xảy ra khi tải dữ liệu');
+          console.error('Search error:', error);
+        })
+        .finally(() => {
+          setLoading(false); // Kết thúc loading
+        });
+    }).catch(() => {
+      setLoading(false); // Kết thúc loading nếu validate form thất bại
     });
   };
 
@@ -147,13 +159,13 @@ const PropertyManagement = () => {
       .then((res) => {
         if (res.success) {
           handleSearch();
-          message.success('Đã mở khóa bất động sản khỏi danh sách đã lưu thành công');
+          message.success('Đã mở khóa bất động sản thành công');
         } else {
-          message.error('Có lỗi khi mở khó bất động sản');
+          message.error('Có lỗi khi mở khóa bất động sản');
         }
       })
       .catch((error) => {
-        message.error('Có lỗi khi mở khó bất động sản');
+        message.error('Có lỗi khi mở khóa bất động sản');
       });
   };
 
@@ -376,10 +388,7 @@ const PropertyManagement = () => {
               </Col>
               <Col span={2}>
                 <FormItem name="type">
-                  <Select
-                    style={{ width: '100%' }}
-                    //allowClear
-                  >
+                  <Select style={{ width: '100%' }}>
                     {[
                       { code: 'SOLD', label: 'Bán' },
                       { code: 'RENT', label: 'Cho thuê' },
@@ -452,7 +461,12 @@ const PropertyManagement = () => {
                 </Form>
               </Col>
               <Col span={3}>
-                <Button type="primary" onClick={handleSearch} style={{ width: '100%'}}>
+                <Button 
+                  type="primary" 
+                  onClick={handleSearch} 
+                  style={{ width: '100%' }}
+                  loading={loading} // Thêm loading cho search button
+                >
                   Tìm kiếm
                 </Button>
               </Col>
@@ -470,6 +484,7 @@ const PropertyManagement = () => {
             scroll={{ x: 800 }}
             size="middle"
             showSorterTooltip={false}
+            loading={loading}
           />
         </Card>
       </Flex>

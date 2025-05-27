@@ -57,3 +57,15 @@ export async function register(body: API.UsersDTO, options?: { [key: string]: an
     ...(options || {}),
   });
 }
+
+/** 此处后端没有提供注释 POST /auth/reset-password */
+export async function resetPassword(body: API.UsersDTO, options?: { [key: string]: any }) {
+  return request<API.ResponseString>('/auth/reset-password', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}

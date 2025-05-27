@@ -14,6 +14,20 @@ export async function createRole(body: API.RoleDTO, options?: { [key: string]: a
   });
 }
 
+/** 此处后端没有提供注释 POST /role/deleteRole/${param0} */
+export async function deleteRole(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.deleteRoleParams,
+  options?: { [key: string]: any },
+) {
+  const { id: param0, ...queryParams } = params;
+  return request<API.ResponseString>(`/role/deleteRole/${param0}`, {
+    method: 'POST',
+    params: { ...queryParams },
+    ...(options || {}),
+  });
+}
+
 /** 此处后端没有提供注释 POST /role/getAllRoles */
 export async function getAllRoles(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
@@ -36,28 +50,14 @@ export async function getAllRoles(
   });
 }
 
-/** 此处后端没有提供注释 POST /role/lockRole/${param0} */
-export async function lockRole(
+/** 此处后端没有提供注释 POST /role/restoreRole/${param0} */
+export async function restoreRole(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.lockRoleParams,
+  params: API.restoreRoleParams,
   options?: { [key: string]: any },
 ) {
   const { id: param0, ...queryParams } = params;
-  return request<API.ResponseString>(`/role/lockRole/${param0}`, {
-    method: 'POST',
-    params: { ...queryParams },
-    ...(options || {}),
-  });
-}
-
-/** 此处后端没有提供注释 POST /role/unlockRole/${param0} */
-export async function unlockRole(
-  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.unlockRoleParams,
-  options?: { [key: string]: any },
-) {
-  const { id: param0, ...queryParams } = params;
-  return request<API.ResponseString>(`/role/unlockRole/${param0}`, {
+  return request<API.ResponseString>(`/role/restoreRole/${param0}`, {
     method: 'POST',
     params: { ...queryParams },
     ...(options || {}),

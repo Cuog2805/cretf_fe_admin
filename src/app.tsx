@@ -1,9 +1,8 @@
-import { AvatarName, Footer, Question, SelectLang } from '@/components';
-import { HomeOutlined, InfoCircleOutlined, LinkOutlined, PhoneOutlined, SearchOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
-import { Avatar, ConfigProvider, Dropdown, Input, Menu, Space } from 'antd';
+import { Footer } from '@/components';
+import { ConfigProvider } from 'antd';
 import type { Settings as LayoutSettings } from '@ant-design/pro-components';
 import type { RunTimeLayoutConfig } from '@umijs/max';
-import { history, Link } from '@umijs/max';
+import { history } from '@umijs/max';
 import React from 'react';
 import defaultSettings from '../config/defaultSettings';
 import { errorConfig } from './requestErrorConfig';

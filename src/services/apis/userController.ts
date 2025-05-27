@@ -9,17 +9,31 @@ export async function deleteUser(
   options?: { [key: string]: any },
 ) {
   const { userId: param0, ...queryParams } = params;
-  return request<API.ResponseVoid>(`/users/deleteUser/${param0}`, {
+  return request<API.ResponseString>(`/users/deleteUser/${param0}`, {
     method: 'DELETE',
     params: { ...queryParams },
     ...(options || {}),
   });
 }
 
-/** 此处后端没有提供注释 GET /users/getAllUsers */
-export async function getAllUsers(options?: { [key: string]: any }) {
+/** 此处后端没有提供注释 POST /users/getAllUsers */
+export async function getAllUsers(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.getAllUsersParams,
+  body: API.UsersDTO,
+  options?: { [key: string]: any },
+) {
   return request<API.ResponseListUsersDTO>('/users/getAllUsers', {
-    method: 'GET',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    params: {
+      // size has a default value: 20
+      size: '20',
+      ...params,
+    },
+    data: body,
     ...(options || {}),
   });
 }
@@ -56,6 +70,20 @@ export async function lockUser(
 export async function getCurrentUser(options?: { [key: string]: any }) {
   return request<API.ResponseUsersDTO>('/users/me', {
     method: 'GET',
+    ...(options || {}),
+  });
+}
+
+/** 此处后端没有提供注释 DELETE /users/restoreUser/${param0} */
+export async function restoreUser(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.restoreUserParams,
+  options?: { [key: string]: any },
+) {
+  const { userId: param0, ...queryParams } = params;
+  return request<API.ResponseString>(`/users/restoreUser/${param0}`, {
+    method: 'DELETE',
+    params: { ...queryParams },
     ...(options || {}),
   });
 }

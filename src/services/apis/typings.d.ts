@@ -45,7 +45,8 @@ declare namespace API {
 
   type ApprovalHistoryDTO = {
     approvalId?: string;
-    propertyId?: string;
+    entityTableId?: string;
+    tableName?: string;
     statusId?: string;
     note?: string;
     approvalDate?: string;
@@ -82,19 +83,17 @@ declare namespace API {
   type DashBoardDTO = {
     dashBoardId?: string;
     type?: string;
-    priceRangeCode?: string;
-    priceRange?: string;
-    priceRangeCount?: number;
-    priceRangePie?: number;
-    name?: string;
-    depositContractDate?: string;
-    depositContractCount?: number;
-    propertyTypeName?: string;
-    propertyCount?: number;
-    priceAvarage?: number;
-    totalViews?: number;
-    totalDepositContractValue?: number;
-    totalPropertyActive?: number;
+    title?: string;
+    category?: string;
+    sortOrder?: number;
+    value?: number;
+    scaleUnit?: string;
+    avgValue?: number;
+    totalValue?: number;
+    count?: number;
+    percentage?: number;
+    minValue?: number;
+    maxValue?: number;
   };
 
   type deleteAppointmentParams = {
@@ -114,6 +113,10 @@ declare namespace API {
   };
 
   type deletePropertyParams = {
+    id: string;
+  };
+
+  type deleteRoleParams = {
     id: string;
   };
 
@@ -216,6 +219,15 @@ declare namespace API {
     sort?: string[];
   };
 
+  type getAllUsersParams = {
+    /** Zero-based page index (0..N) */
+    page?: number;
+    /** The size of the page to be returned */
+    size?: number;
+    /** Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+    sort?: string[];
+  };
+
   type getAppointmentBySearchParams = {
     /** Zero-based page index (0..N) */
     page?: number;
@@ -270,10 +282,6 @@ declare namespace API {
     isDeleted?: number;
   };
 
-  type lockRoleParams = {
-    id: string;
-  };
-
   type lockUserParams = {
     userId: string;
   };
@@ -282,9 +290,9 @@ declare namespace API {
     offset?: number;
     sort?: SortObject;
     paged?: boolean;
-    pageNumber?: number;
-    pageSize?: number;
     unpaged?: boolean;
+    pageSize?: number;
+    pageNumber?: number;
   };
 
   type PageStatusDTO = {
@@ -295,9 +303,9 @@ declare namespace API {
     number?: number;
     sort?: SortObject;
     numberOfElements?: number;
-    pageable?: PageableObject;
     first?: boolean;
     last?: boolean;
+    pageable?: PageableObject;
     empty?: boolean;
   };
 
@@ -570,12 +578,12 @@ declare namespace API {
     throwException?: boolean;
   };
 
-  type ResponseVoid = {
-    success: boolean;
-    message?: string;
-    data: Record<string, any>;
-    total: number;
-    throwException?: boolean;
+  type restoreRoleParams = {
+    id: string;
+  };
+
+  type restoreUserParams = {
+    userId: string;
   };
 
   type RoleDTO = {
@@ -623,10 +631,6 @@ declare namespace API {
     modifier?: string;
     dateModified?: string;
     isDeleted?: number;
-  };
-
-  type unlockRoleParams = {
-    id: string;
   };
 
   type unlockUserParams = {
