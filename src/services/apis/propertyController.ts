@@ -179,6 +179,18 @@ export async function removeToFavourite(body: API.PropertyDTO, options?: { [key:
   });
 }
 
+/** 此处后端没有提供注释 POST /property/repostProperty */
+export async function repostProperty(body: API.PropertyDTO, options?: { [key: string]: any }) {
+  return request<API.ResponseString>('/property/repostProperty', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
 /** 此处后端没有提供注释 POST /property/unLockProperty */
 export async function unLockProperty(body: API.PropertyDTO, options?: { [key: string]: any }) {
   return request<API.ResponseString>('/property/unLockProperty', {

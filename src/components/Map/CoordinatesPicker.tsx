@@ -77,10 +77,10 @@ const MapSizeInvalidator: React.FC = () => {
 };
 
 const CoordinatesPicker: React.FC<CoordinatesPickerProps> = ({ value = {}, onChange }) => {
-  // Mặc định tọa độ TP.HCM
+  // Hà Nội
   const defaultLocation = {
-    latitude: 10.762622,
-    longitude: 106.660172,
+    latitude: 21.0227346,
+    longitude: 105.7957638,
   };
 
   const [coordinates, setCoordinates] = useState<API.CoordinatesDTO>({

@@ -36,6 +36,8 @@ declare namespace API {
     date?: string;
     statusId?: string;
     note?: string;
+    approvalHistoryDTO?: ApprovalHistoryDTO;
+    approvalHistoryDTOs?: ApprovalHistoryDTO[];
     creator?: string;
     dateCreated?: string;
     modifier?: string;
@@ -138,6 +140,8 @@ declare namespace API {
     downloadUrl?: string;
     statusId?: string;
     depositDTO?: DepositDTO;
+    approvalHistoryDTO?: ApprovalHistoryDTO;
+    approvalHistoryDTOs?: ApprovalHistoryDTO[];
   };
 
   type DepositDTO = {
@@ -289,8 +293,8 @@ declare namespace API {
   type PageableObject = {
     offset?: number;
     sort?: SortObject;
-    paged?: boolean;
     unpaged?: boolean;
+    paged?: boolean;
     pageSize?: number;
     pageNumber?: number;
   };
@@ -616,8 +620,8 @@ declare namespace API {
 
   type SortObject = {
     empty?: boolean;
-    sorted?: boolean;
     unsorted?: boolean;
+    sorted?: boolean;
   };
 
   type StatusDTO = {

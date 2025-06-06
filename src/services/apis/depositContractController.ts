@@ -2,12 +2,12 @@
 /* eslint-disable */
 import { request } from '@umijs/max';
 
-/** 此处后端没有提供注释 POST /depositContract/confirmDepositContract */
-export async function confirmDepositContract(
+/** 此处后端没有提供注释 POST /depositContract/approveDepositContract */
+export async function approveDepositContract(
   body: API.DepositContractDTO,
   options?: { [key: string]: any },
 ) {
-  return request<API.ResponseString>('/depositContract/confirmDepositContract', {
+  return request<API.ResponseString>('/depositContract/approveDepositContract', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -83,21 +83,6 @@ export async function getDepositContractById(
       ...(options || {}),
     },
   );
-}
-
-/** 此处后端没有提供注释 POST /depositContract/rejectDepositContract */
-export async function rejectDepositContract(
-  body: API.DepositContractDTO,
-  options?: { [key: string]: any },
-) {
-  return request<API.ResponseString>('/depositContract/rejectDepositContract', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
-    ...(options || {}),
-  });
 }
 
 /** 此处后端没有提供注释 GET /depositContract/searchDepositContract */

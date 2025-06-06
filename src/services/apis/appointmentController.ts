@@ -2,12 +2,12 @@
 /* eslint-disable */
 import { request } from '@umijs/max';
 
-/** 此处后端没有提供注释 POST /appointment/confirmAppointment */
-export async function confirmAppointment(
+/** 此处后端没有提供注释 POST /appointment/approveAppointment */
+export async function approveAppointment(
   body: API.AppointmentDTO,
   options?: { [key: string]: any },
 ) {
-  return request<API.ResponseString>('/appointment/confirmAppointment', {
+  return request<API.ResponseString>('/appointment/approveAppointment', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -62,36 +62,6 @@ export async function getAppointmentBySearch(
       // size has a default value: 20
       size: '20',
       ...params,
-    },
-    data: body,
-    ...(options || {}),
-  });
-}
-
-/** 此处后端没有提供注释 POST /appointment/rejectAppointment */
-export async function rejectAppointment(
-  body: API.AppointmentDTO,
-  options?: { [key: string]: any },
-) {
-  return request<API.ResponseString>('/appointment/rejectAppointment', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
-    ...(options || {}),
-  });
-}
-
-/** 此处后端没有提供注释 POST /appointment/updateAppointment */
-export async function updateAppointment(
-  body: API.AppointmentDTO,
-  options?: { [key: string]: any },
-) {
-  return request<API.ResponseAppointmentDTO>('/appointment/updateAppointment', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
     },
     data: body,
     ...(options || {}),

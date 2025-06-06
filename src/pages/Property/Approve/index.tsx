@@ -286,7 +286,7 @@ const PropertyApprove = () => {
             <Button
               type="text"
               size="small"
-              icon={<CheckCircleOutlined style={{ color: '#ff4d4f' }} />}
+              icon={<CheckOutlined style={{ color: '#ff4d4f' }} />}
               onClick={(e) => {
                 e.stopPropagation();
                 showApprovalModal(record, true);
@@ -298,7 +298,7 @@ const PropertyApprove = () => {
             <Button
               type="text"
               size="small"
-              icon={<CloseCircleOutlined style={{ color: '#ff4d4f' }} />}
+              icon={<CloseOutlined style={{ color: '#ff4d4f' }} />}
               onClick={(e) => {
                 e.stopPropagation();
                 showApprovalModal(record, false);
